@@ -4,13 +4,13 @@
     <v-text-field label="Database" v-model="quiz.db" required/>
     <div v-for="(q, i) in quiz.questions" :key="i">
       <div>#{{ i + 1 }}</div>
-      <v-btn v-if="quiz.questions.length > 1" @click.native="removeQuestion(i)">Frage löschen</v-btn>
+      <v-btn v-if="quiz.questions.length > 1" @click="removeQuestion(i)">Frage löschen</v-btn>
       <v-text-field label="Frage" v-model="q.question" required/>
       <v-text-field label="Mögliche Antwort" v-model="q.answer" required/>
     </div>
-    <v-btn @click.native="addQuestion">Frage hinzufügen</v-btn>
-    <v-btn @click.native="saveQuiz">Aktualisieren</v-btn>
-    <v-btn @click.native="deleteQuiz" v-if="quiz.id">Löschen</v-btn>
+    <v-btn @click="addQuestion">Frage hinzufügen</v-btn>
+    <v-btn @click="saveQuiz">Aktualisieren</v-btn>
+    <v-btn @click="deleteQuiz" v-if="quiz.id">Löschen</v-btn>
   </div>
 </template>
 <script>

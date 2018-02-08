@@ -5,9 +5,9 @@
         <v-icon dark>arrow_back</v-icon>
       </v-btn>
       <v-toolbar-title style="width: 100%" class="text-xs-center">
-        <router-link to="/">SQL-Battle</router-link>
+        <router-link to="/" class="text--white">SQL-Battle</router-link>
       </v-toolbar-title>
-      <v-btn icon @click="changeBrightness()">
+      <v-btn icon @click="isDark = !isDark">
         <v-icon>brightness_{{ isDark ? 'low' : '2' }}</v-icon>
       </v-btn>
     </v-toolbar>
@@ -27,26 +27,9 @@
 
   export default {
     name: 'App',
-    computed: {
-      isDark() {
-        console.log('computed updated')
-        return window && window['SqlBattle'] && window['SqlBattle']['isDark']
-      }
-    },
-    beforeCreate() {
-      this.$nextTick(function () {
-        Vue.set('window.SqlBattle', {
-          isDark: true
-        })
-      })
-    },
-    methods: {
-      changeBrightness() {
-        console.log('dark', window['SqlBattle']['isDark'])
-        window['SqlBattle']['isDark'] = !window['SqlBattle']['isDark']
-      },
-      log(log) {
-        debugger
+    data () {
+      return {
+        isDark: true
       }
     }
   }

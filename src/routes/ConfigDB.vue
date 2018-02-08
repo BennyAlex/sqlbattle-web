@@ -11,8 +11,8 @@
           id="textareaStatement"
         />
       </div>
-      <v-btn @click.native="save">Aktualisieren</v-btn>
-      <v-btn @click.native="deletee">Löschen</v-btn>
+      <v-btn @click="save">Aktualisieren</v-btn>
+      <v-btn @click="deletee">Löschen</v-btn>
     </div>
   </div>
 </template>

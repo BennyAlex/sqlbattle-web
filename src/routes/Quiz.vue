@@ -58,10 +58,10 @@
   </div>
   <div v-else>
     <div>
-      <h1 align="center">Well done!<br>You solved the quiz "{{ quiz.name }}"!</h1>
-      <h2 align="center">Time needed: { {msToTime(endTime - startTime) }}</h2>
-      <h2 align="center">Questions solved: {{ questionIndex + 1 }}</h2>
-      <v-btn @click.native="backToMenu">Back To Menu</v-btn>
+      <h1 align="center">Gut gemacht!<br>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h1>
+      <h2 align="center">Benötigte Zeit: { {msToTime(endTime - startTime) }}</h2>
+      <h2 align="center">Fragen gelöst: {{ questionIndex + 1 }}</h2>
+      <v-btn @click="backToMenu">Zurück zum Menü</v-btn>
     </div>
   </div>
 </template>
@@ -107,9 +107,7 @@
     },
     methods: {
       async run() {
-        if (!this.canRunStatement) {
-          return
-        }
+        if (!this.canRunStatement) return
 
         this.canRunStatement = false
         const result = await fetch('/api/query', {
@@ -123,9 +121,8 @@
 
         this.result = await result.json()
 
-        if (this.result.error) {
-          alert(this.result.error)
-        } else {
+        if (this.result.error) alert(this.result.error)
+        else {
           this.sqlResult = this.result.result[0]
           if (this.result.correct) {
             setTimeout(() => alert('Well done! Solve the next Question!'), 0)
