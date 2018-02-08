@@ -1,114 +1,89 @@
 <template>
   <div v-if="quiz">
-    <v-text-field
-      label="Name"
-      v-model="quiz.name"
-      required
-    />
-    <v-text-field
-      label="Database"
-      v-model="quiz.db"
-      required
-    />
-    <div
-      v-for="(q, i) in quiz.questions"
-      :key="i"
-    >
+    <v-text-field label="Name" v-model="quiz.name" required/>
+    <v-text-field label="Database" v-model="quiz.db" required/>
+    <div v-for="(q, i) in quiz.questions" :key="i">
       <div>#{{ i + 1 }}</div>
-      <v-btn
-        v-if="quiz.questions.length > 1"
-        @click.native="removeQuestion(i)"
-      >Frage löschen</v-btn>
-      <v-text-field
-        label="Frage"
-        v-model="q.question"
-        required
-      />
-      <v-text-field
-        label="Mögliche Antwort"
-        v-model="q.answer"
-        required
-      />
+      <v-btn v-if="quiz.questions.length > 1" @click.native="removeQuestion(i)">Frage löschen</v-btn>
+      <v-text-field label="Frage" v-model="q.question" required/>
+      <v-text-field label="Mögliche Antwort" v-model="q.answer" required/>
     </div>
     <v-btn @click.native="addQuestion">Frage hinzufügen</v-btn>
-    <v-btn @click.native="saveQuiz">Update</v-btn>
-    <v-btn @click.native="deleteQuiz" v-if="quiz.id">Delete</v-btn>
+    <v-btn @click.native="saveQuiz">Aktualisieren</v-btn>
+    <v-btn @click.native="deleteQuiz" v-if="quiz.id">Löschen</v-btn>
   </div>
 </template>
 <script>
-export default {
-  name: 'ConfigQuizzes',
-  data () {
-    return {
-      quiz: undefined
-    }
-  },
-  async created () {
-    if (this.$route.params.newQuiz) {
-      this.newQuiz()
-    } else {
-      this.loadQuiz()
-    }
-  },
-  methods: {
-    removeQuestion (i) {
-      this.quiz.questions.splice(i, 1)
-    },
-    addQuestion () {
-      this.quiz.questions.push({
-        answer: '',
-        question: ''
-      })
-    },
-    newQuiz () {
-      this.quiz = {
-        id: undefined,
-        name: '',
-        db: '',
-        questions: []
+  export default {
+    name: 'ConfigQuizzes',
+    data() {
+      return {
+        quiz: undefined
       }
-      this.addQuestion()
     },
-    async loadQuiz () {
-      const response = await fetch(`/api/quizzes/${this.$route.params.id}`)
-      if (!response.ok) {
-        alert(response.statusText)
-        return
+    async created() {
+      if (this.$route.params.newQuiz) {
+        this.newQuiz()
+      } else {
+        this.loadQuiz()
       }
-      this.quiz = await response.json()
     },
-    async saveQuiz () {
-      const json = {
-        name: this.quiz.name,
-        db: this.quiz.db,
-        questions: this.quiz.questions.map(({ question, answer }) => ({ question, answer }))
+    methods: {
+      removeQuestion(i) {
+        this.quiz.questions.splice(i, 1)
+      },
+      addQuestion() {
+        this.quiz.questions.push({
+          answer: '',
+          question: ''
+        })
+      },
+      newQuiz() {
+        this.quiz = {
+          id: undefined,
+          name: '',
+          db: '',
+          questions: []
+        }
+        this.addQuestion()
+      },
+      async loadQuiz() {
+        const response = await fetch(`/api/quizzes/${this.$route.params.id}`)
+        if (!response.ok) {
+          alert(response.statusText)
+          return
+        }
+        this.quiz = await response.json()
+      },
+      async saveQuiz() {
+        const json = {
+          name: this.quiz.name,
+          db: this.quiz.db,
+          questions: this.quiz.questions.map(({question, answer}) => ({question, answer}))
+        }
+        const result = await fetch(`/api/quizzes/${this.$route.params.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(json)
+        })
+        const {error} = await result.json()
+        if (error) {
+          alert(error)
+          return
+        }
+        this.quiz.id = this.$route.params.id
+        alert('Update successful')
+      },
+      async deleteQuiz() {
+        const result = await fetch(`/api/quizzes/${this.quiz.id}`, {
+          method: 'DELETE'
+        })
+        const {error} = await result.json()
+        if (error) {
+          alert(error)
+          return
+        }
+        this.$router.push('/config')
       }
-      const result = await fetch(`/api/quizzes/${this.$route.params.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(json)
-      })
-      const { error } = await result.json()
-      if (error) {
-        alert(error)
-        return
-      }
-      this.quiz.id = this.$route.params.id
-      alert('Update successful')
-    },
-    async deleteQuiz () {
-      const result = await fetch(`/api/quizzes/${this.quiz.id}`, {
-        method: 'DELETE'
-      })
-      const { error } = await result.json()
-      if (error) {
-        alert(error)
-        return
-      }
-      this.$router.push('/config')
     }
   }
-}
 </script>
-
-<style scoped>
-</style>

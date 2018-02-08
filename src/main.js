@@ -12,7 +12,9 @@ Vue.use(Vuetify, {
   }
 })
 
-import('../node_modules/vuetify/dist/vuetify.min.css')
+import 'vuetify/dist/vuetify.min.css'
+import 'material-design-icons/iconfont/material-icons.css'
+import 'roboto-fontface/css/roboto/roboto-fontface.css'
 
 Vue.config.productionTip = false
 

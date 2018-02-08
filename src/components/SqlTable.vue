@@ -19,18 +19,19 @@
 
 <script>
 export default {
+  name: 'SqlTable',
   props: {
     fields: {
       type: Array,
-      default: []
+      default () {
+        return []
+      }
     },
     rows: {
       type: Array,
-      default: []
-    }
-  },
-  data () {
-    return {
+      default () {
+        return []
+      }
     }
   }
 }
