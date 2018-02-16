@@ -1,91 +1,154 @@
 <template>
-  <v-container fluid grid-list-md>
-    <v-container v-if="loading">
-      Daten werden geladen, bitte warten...
-    </v-container>
-    <template v-else>
-      <div>Datenbanken:</div>
-      <v-layout row wrap>
-        <v-flex xs12 md6 lg4 v-for="db in databases" :key="db.id">
-          <!-- <v-card flat tile :to="{name: 'Quiz', params: { quizID: quiz.id}}" class="quiz-card"> -->
-          <v-card flat tile :to="{name: 'ConfigDB', params: { dbID: db.id}}" class="config-card">
-            <v-card-text>{{ db.id }}</v-card-text>
-          </v-card>
-        </v-flex>
-      </v-layout>
-      <div>Quizzes:</div>
-      <v-layout row wrap>
-        <v-flex xs12 md6 lg4 v-for="quiz in quizzes" :key="quiz.id">
-          <v-card flat tile class="config-card" :to="{ name: 'ConfigQuizzes', params: { id: quiz.id } }">
-            <v-card-text>{{ quiz.name }}</v-card-text>
-            <v-card-actions>
-              <v-spacer/>
-              <v-btn fab dark color="pink" @click="createDB" fixed bottom left>
-                <v-icon dark>create</v-icon>
-              </v-btn>
-              <v-btn fab dark color="pink" @click="createQuiz" fixed bottom right>
-                <v-icon dark>create</v-icon>
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </template>
+  <loading v-if="loading"/>
+  <v-container grid-list-xl v-else>
+    <v-layout row wrap>
+      <v-flex xs12 sm6>
+        <v-card>
+          <v-card-text>
+            <v-layout row space-between align-center>
+              <v-flex><h2>Datenbanken:</h2></v-flex>
+              <!--
+              TODO: Allow post for database
+              <database-dialog>
+                <v-btn flat outline round small color="primary">Datenbank anlegen
+                  <v-icon small>add</v-icon>
+                </v-btn>
+              </database-dialog>
+              -->
+            </v-layout>
+            <v-list>
+              <template v-for="(db, index) in databases">
+                <v-divider v-if="index !== 0" :key="db.id"/>
+                <v-list-tile :key="db.id">
+                  <v-list-tile-content>
+                    <v-list-tile-title v-text="' - ' + db.id"/>
+                  </v-list-tile-content>
+                  <v-list-tile-action>
+                    <database-edit-dialog :database="Object.assign({}, db)" @refresh="loadData()">
+                      <v-btn icon>
+                        <v-icon>edit</v-icon>
+                      </v-btn>
+                    </database-edit-dialog>
+                  </v-list-tile-action>
+                  <v-list-tile-action>
+                    <database-delete-dialog :dbID="db.id" @refresh="loadData()">
+                      <v-btn icon>
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </database-delete-dialog>
+                  </v-list-tile-action>
+                </v-list-tile>
+              </template>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex xs12 sm6>
+        <v-card>
+          <v-card-text>
+            <v-layout row space-between align-center>
+              <v-flex><h2>Quizze:</h2></v-flex>
+              <quiz-dialog>
+                <v-btn flat outline round small color="primary">Quiz anlegen
+                  <v-icon small>add</v-icon>
+                </v-btn>
+              </quiz-dialog>
+            </v-layout>
+            <v-list>
+              <template v-for="(quiz, index) in quizzes">
+                <v-divider v-if="index !== 0" :key="quiz.id"/>
+                <v-list-tile :key="quiz.id">
+                  <v-list-tile-content>
+                    <v-list-tile-title v-text="' - ' + quiz.name"/>
+                  </v-list-tile-content>
+                  <v-list-tile-action>
+                    <v-btn icon @click="editQuiz(quiz)">
+                      <v-icon>edit</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                </v-list-tile>
+              </template>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
 <script>
-  export default {
-    name: 'Config',
-    data() {
-      return {
-        loading: true,
-        databases: [],
-        quizzes: []
-      }
-    },
-    async mounted () {
+import Loading from '@/components/Loading'
+import QuizDialog from '@/components/QuizDialog'
+import DatabaseEditDialog from '@/components/DatabaseEditDialog'
+import DatabaseDeleteDialog from '@/components/DatabaseDeleteDialog'
+
+export default {
+  components: {
+    DatabaseEditDialog,
+    DatabaseDeleteDialog,
+    QuizDialog,
+    Loading
+  },
+  name: 'Config',
+  data () {
+    return {
+      loading: true,
+      error: null,
+      deleteDbDialog: false,
+      databases: [],
+      quizzes: []
+    }
+  },
+  async mounted () {
+    await this.loadData()
+  },
+  methods: {
+    async loadData () {
       this.loading = true
       this.databases = await this.getDatabases()
       this.quizzes = await this.getQuizzes()
       this.loading = false
     },
-    methods: {
-      async getQuizzes() {
-        const quizzes = await fetch('/api/quizzes')
-        const temp = await quizzes.json()
-        return temp.quizzes
-      },
-      async getDatabases() {
-        const databases = await fetch('/api/databases')
-        const temp = await databases.json()
-        return temp.databases
-      },
-      async createDB() {
-        const name = prompt('Enter DB Title')
+    async getQuizzes () {
+      const quizzes = await fetch('/api/quizzes')
+      const temp = await quizzes.json()
+      return temp.quizzes
+    },
+    async getDatabases () {
+      const databases = await fetch('/api/databases')
+      const temp = await databases.json()
+      // TODO: get database.sql
+      return temp.databases
+    },
+    async createDB () {
+      const name = prompt('Enter DB Title')
 
-        const result = await fetch(`/api/databases/${name}`, {
-          method: 'PUT',
-          body: JSON.stringify({sql: ''})
-        })
+      const result = await fetch(`/api/databases/${name}`, {
+        method: 'PUT',
+        body: JSON.stringify({sql: ''})
+      })
 
-        const {error} = await result.json()
-        if (error) {
-          alert(error)
-        } else {
-          alert('Create successful')
-        }
-      },
-      createQuiz() {
-        const id = prompt('Enter Quiz Id')
-        this.$router.push({name: 'ConfigQuizzes', params: {id, newQuiz: true}})
+      const {error} = await result.json()
+      if (error) {
+        alert(error)
+      } else {
+        alert('Create successful')
       }
-    }
+    },
+    createQuiz () {
+      const id = prompt('Enter Quiz Id')
+      this.$router.push({name: 'ConfigQuizzes', params: {id, newQuiz: true}})
+    },
+    editDb (db) {}
   }
+}
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  .list__tile__title {
+    font-size: 17px;
+  }
+
   .config-card {
     color: rgb(0, 0, 0) !important;
     text-align: center;

@@ -18,7 +18,7 @@
     name: 'ConfigQuizzes',
     data() {
       return {
-        quiz: undefined
+        quiz: {}
       }
     },
     async created() {

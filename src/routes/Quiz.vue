@@ -66,116 +66,116 @@
   </div>
 </template>
 <script>
-  import SqlTable from '@/components/SqlTable'
+import SqlTable from '@/components/SqlTable'
 
-  export default {
-    name: 'Quiz',
-    components: {
-      SqlTable
-    },
-    props: {
-      quizID: {
-        type: [String, Number],
-        required: true
-      }
-    },
-    data() {
-      return {
-        page: 0,
-        code: 'const noop = () => {}',
-        quiz: undefined,
-        questionIndex: 0,
-        statement: '',
-        result: undefined,
-        canRunStatement: true,
+export default {
+  name: 'Quiz',
+  components: {
+    SqlTable
+  },
+  props: {
+    quizID: {
+      type: [String, Number],
+      required: true
+    }
+  },
+  data () {
+    return {
+      page: 0,
+      code: 'const noop = () => {}',
+      quiz: undefined,
+      questionIndex: 0,
+      statement: '',
+      result: undefined,
+      canRunStatement: true,
 
-        quizFinished: false,
-        startTime: Date.now(),
-        endTime: undefined,
+      quizFinished: false,
+      startTime: Date.now(),
+      endTime: undefined,
 
-        sqlResult: undefined
-      }
-    },
-    async mounted() {
-      const quiz = await fetch(`/api/quizzes/${this.quizID}`)
-      this.quiz = await quiz.json()
-      this.page = this.questionIndex + 1
-      document.addEventListener('keydown', this.onKeydown)
-    },
-    beforeDestroy() {
-      document.removeEventListener('keydown', this.onKeydown)
-    },
-    methods: {
-      async run() {
-        if (!this.canRunStatement) return
+      sqlResult: undefined
+    }
+  },
+  async mounted () {
+    const quiz = await fetch(`/api/quizzes/${this.quizID}`)
+    this.quiz = await quiz.json()
+    this.page = this.questionIndex + 1
+    document.addEventListener('keydown', this.onKeydown)
+  },
+  beforeDestroy () {
+    document.removeEventListener('keydown', this.onKeydown)
+  },
+  methods: {
+    async run () {
+      if (!this.canRunStatement) return
 
-        this.canRunStatement = false
-        const result = await fetch('/api/query', {
-          method: 'POST',
-          body: JSON.stringify({
-            db: this.quiz.db,
-            sql: this.statement,
-            answer: this.quiz.questions[this.questionIndex].answer
-          })
+      this.canRunStatement = false
+      const result = await fetch('/api/query', {
+        method: 'POST',
+        body: JSON.stringify({
+          db: this.quiz.db,
+          sql: this.statement,
+          answer: this.quiz.questions[this.questionIndex].answer
         })
+      })
 
-        this.result = await result.json()
+      this.result = await result.json()
 
-        if (this.result.error) alert(this.result.error)
-        else {
-          this.sqlResult = this.result.result[0]
-          if (this.result.correct) {
-            setTimeout(() => alert('Well done! Solve the next Question!'), 0)
-            this.statement = ''
-            this.goToNextQuestion()
-          }
+      if (this.result.error) alert(this.result.error)
+      else {
+        this.sqlResult = this.result.result[0]
+        if (this.result.correct) {
+          setTimeout(() => alert('Well done! Solve the next Question!'), 0)
+          this.statement = ''
+          this.goToNextQuestion()
         }
-        this.canRunStatement = true
-      },
-      showAnswer() {
-        alert(this.quiz.questions[this.questionIndex].answer)
-      },
-      goToNextQuestion() {
-        if (this.questionIndex < this.quiz.questions.length - 1) {
-          this.questionIndex++
-          this.page++
-        } else {
-          alert('Congratulations! Quiz finished!')
-          this.quizFinished = true
-          this.endTime = Date.now()
-        }
-      },
-      goToPreviousQuestion() {
-        if (this.questionIndex > 0) {
-          this.questionIndex--
-        }
-      },
-      onKeydown(e) {
-        if (!e.ctrlKey && !e.metaKey) {
-          return
-        }
-        if (e.key === 'Enter') {
-          e.preventDefault()
-          this.run()
-        }
-      },
-      msToTime(duration) {
-        const leftPad = i => i < 10 ? '0' + Math.floor(i) : Math.floor(i)
-        const seconds = leftPad((duration / 1000) % 60)
-        const minutes = leftPad((duration / (1000 * 60)) % 60)
-        const hours = leftPad((duration / (1000 * 60 * 60)) % 24)
-
-        return `${hours}:${minutes}:${seconds}`
-      },
-      backToMenu() {
-        this.$router.replace('/')
-      },
-      pageSelected(value) {
-        this.questionIndex = value - 1
-        this.page = value
       }
+      this.canRunStatement = true
+    },
+    showAnswer () {
+      alert(this.quiz.questions[this.questionIndex].answer)
+    },
+    goToNextQuestion () {
+      if (this.questionIndex < this.quiz.questions.length - 1) {
+        this.questionIndex++
+        this.page++
+      } else {
+        alert('Congratulations! Quiz finished!')
+        this.quizFinished = true
+        this.endTime = Date.now()
+      }
+    },
+    goToPreviousQuestion () {
+      if (this.questionIndex > 0) {
+        this.questionIndex--
+      }
+    },
+    onKeydown (e) {
+      if (!e.ctrlKey && !e.metaKey) {
+        return
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        this.run()
+      }
+    },
+    msToTime (duration) {
+      const leftPad = i => i < 10 ? '0' + Math.floor(i) : Math.floor(i)
+      const seconds = leftPad((duration / 1000) % 60)
+      const minutes = leftPad((duration / (1000 * 60)) % 60)
+      const hours = leftPad((duration / (1000 * 60 * 60)) % 24)
+
+      return `${hours}:${minutes}:${seconds}`
+    },
+    backToMenu () {
+      this.$router.replace('/')
+    },
+    pageSelected (value) {
+      this.questionIndex = value - 1
+      this.page = value
     }
   }
+}
 </script>
 
 <style>
