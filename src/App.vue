@@ -1,6 +1,6 @@
 <template>
   <v-app light>
-    <v-toolbar app fixed dense class="no-text-highlight main-bg">
+    <v-toolbar app fixed class="no-text-highlight main-bg">
       <v-btn absolute flat icon class="z-index-5" v-show="!isMain" @click="$router.go('-1')" dark>
         <v-icon>arrow_back</v-icon>
       </v-btn>
@@ -24,7 +24,7 @@
 export default {
   name: 'App',
   computed: {
-    isMain () {
+    isMain() {
       return this.$route.path === '/' || this.$route.name === 'Main'
     }
   }
@@ -62,7 +62,7 @@ export default {
     z-index: 0;
     letter-spacing: 2px;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 22px;
     width: 100% !important;
     text-align: center;
     position: fixed;
@@ -72,7 +72,7 @@ export default {
     color: inherit !important;
   }
 
-  .no-text-highlight {
+  .no-text-highlight, .input-group--select, .input-group--selections {
     -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
@@ -100,5 +100,17 @@ export default {
     align-content: center;
     text-align: center;
     flex-wrap: wrap;
+  }
+
+  .dialog-card-container {
+    margin: 0;
+    padding: 0;
+    padding-top: 76px;
+  }
+
+  @media only screen and (max-width: 959px) {
+    .dialog-card-container {
+      padding-top: 66px;
+    }
   }
 </style>

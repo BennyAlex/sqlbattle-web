@@ -1,7 +1,7 @@
 <template>
   <loading v-if="loading"/>
   <v-container grid-list-xl v-else>
-    <h1>Quiz Auswählen</h1>
+    <h1>Quiz Auswählen:</h1>
     <quiz-list :quizzes="quizzes"/>
   </v-container>
 </template>
@@ -29,8 +29,8 @@ export default {
   methods: {
     async getQuizzes () {
       const quizzes = await fetch('/api/quizzes')
-      const temp = await quizzes.json()
-      return temp.quizzes
+      const tmp = await quizzes.json()
+      return tmp.quizzes
     }
   }
 }
