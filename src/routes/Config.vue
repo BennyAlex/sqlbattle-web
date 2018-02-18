@@ -1,74 +1,93 @@
 <template>
-  <loading v-if="loading"/>
-  <v-container grid-list-xl v-else>
+  <v-container class="config" grid-list-xl>
     <v-layout row wrap>
-      <v-flex xs12 sm6>
+      <v-flex xs12 md6>
         <v-card>
+          <v-card-title>
+            <h1>Datenbanken:</h1>
+          </v-card-title>
           <v-card-text>
-            <v-layout row space-between align-center>
-              <v-flex><h2>Datenbanken:</h2></v-flex>
-              <!--
-              TODO: Allow post for database
-              <database-dialog>
-                <v-btn flat outline round small color="primary">Datenbank anlegen
-                  <v-icon small>add</v-icon>
+            <loading v-show="loading"/>
+            <v-list v-show="!loading">
+              <v-list-tile v-for="db in databases" :key="db.id">
+                <v-list-tile-content>
+                  <v-list-tile-title v-text="' - ' + db.id"/>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <database-dialog :database="db" @refresh="loadData()" :key="db.id">
+                    <v-btn icon>
+                      <v-icon>edit</v-icon>
+                    </v-btn>
+                  </database-dialog>
+                </v-list-tile-action>
+                <v-list-tile-action>
+                  <delete-dialog
+                    :id="db.id"
+                    type="databases"
+                    title="Datenbank"
+                    @refresh="loadData()"
+                    key="delete-db"
+                  >
+                    <v-btn icon>
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </delete-dialog>
+                </v-list-tile-action>
+              </v-list-tile>
+            </v-list>
+            <div class="add-btn">
+              <database-dialog isNew @refresh="loadData()" key="new-db">
+                <v-btn round color="primary">
+                  Datenbank Hinzufügen
                 </v-btn>
               </database-dialog>
-              -->
-            </v-layout>
-            <v-list>
-              <template v-for="(db, index) in databases">
-                <v-divider v-if="index !== 0" :key="db.id"/>
-                <v-list-tile :key="db.id">
-                  <v-list-tile-content>
-                    <v-list-tile-title v-text="' - ' + db.id"/>
-                  </v-list-tile-content>
-                  <v-list-tile-action>
-                    <database-edit-dialog :database="Object.assign({}, db)" @refresh="loadData()">
-                      <v-btn icon>
-                        <v-icon>edit</v-icon>
-                      </v-btn>
-                    </database-edit-dialog>
-                  </v-list-tile-action>
-                  <v-list-tile-action>
-                    <database-delete-dialog :dbID="db.id" @refresh="loadData()">
-                      <v-btn icon>
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </database-delete-dialog>
-                  </v-list-tile-action>
-                </v-list-tile>
-              </template>
-            </v-list>
+            </div>
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex xs12 sm6>
+
+      <v-flex xs12 md6>
         <v-card>
+          <v-card-title>
+            <h1>Quizze:</h1>
+          </v-card-title>
           <v-card-text>
-            <v-layout row space-between align-center>
-              <v-flex><h2>Quizze:</h2></v-flex>
-              <quiz-dialog>
-                <v-btn flat outline round small color="primary">Quiz anlegen
-                  <v-icon small>add</v-icon>
-                </v-btn>
-              </quiz-dialog>
-            </v-layout>
-            <v-list>
-              <template v-for="(quiz, index) in quizzes">
-                <v-divider v-if="index !== 0" :key="quiz.id"/>
-                <v-list-tile :key="quiz.id">
-                  <v-list-tile-content>
-                    <v-list-tile-title v-text="' - ' + quiz.name"/>
-                  </v-list-tile-content>
-                  <v-list-tile-action>
-                    <v-btn icon @click="editQuiz(quiz)">
+            <loading v-show="loading"/>
+            <v-list v-show="!loading">
+              <v-list-tile v-for="quiz in quizzes" :key="quiz.id">
+                <v-list-tile-content>
+                  <v-list-tile-title v-text="' - ' + quiz.name"/>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <quiz-dialog :databases="databases" :quizID="quiz.id" @refresh="loadData()">
+                    <v-btn icon>
                       <v-icon>edit</v-icon>
                     </v-btn>
-                  </v-list-tile-action>
-                </v-list-tile>
-              </template>
+                  </quiz-dialog>
+                </v-list-tile-action>
+                <v-list-tile-action>
+                  <delete-dialog
+                    :id="quiz.id"
+                    :name="quiz.name"
+                    type="quizzes"
+                    title="Quiz"
+                    @refresh="loadData()"
+                    key="delete-quiz"
+                  >
+                    <v-btn icon>
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </delete-dialog>
+                </v-list-tile-action>
+              </v-list-tile>
             </v-list>
+            <div class="add-btn">
+              <quiz-dialog :databases="databases" @refresh="loadData()" key="new-quiz">
+                <v-btn round color="primary">
+                  Quiz Hinzufügen
+                </v-btn>
+              </quiz-dialog>
+            </div>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -79,96 +98,76 @@
 <script>
 import Loading from '@/components/Loading'
 import QuizDialog from '@/components/QuizDialog'
-import DatabaseEditDialog from '@/components/DatabaseEditDialog'
-import DatabaseDeleteDialog from '@/components/DatabaseDeleteDialog'
+import DatabaseDialog from '@/components/DatabaseDialog'
+import DeleteDialog from '@/components/DeleteDialog'
 
 export default {
   components: {
-    DatabaseEditDialog,
-    DatabaseDeleteDialog,
+    DatabaseDialog,
+    DeleteDialog,
     QuizDialog,
     Loading
   },
   name: 'Config',
-  data () {
+  data() {
     return {
       loading: true,
       error: null,
-      deleteDbDialog: false,
       databases: [],
       quizzes: []
     }
   },
-  async mounted () {
+  async mounted() {
     await this.loadData()
   },
   methods: {
-    async loadData () {
+    async loadData() {
       this.loading = true
       this.databases = await this.getDatabases()
       this.quizzes = await this.getQuizzes()
       this.loading = false
     },
-    async getQuizzes () {
+    async getQuizzes() {
       const quizzes = await fetch('/api/quizzes')
       const temp = await quizzes.json()
       return temp.quizzes
     },
-    async getDatabases () {
+    async getDatabases() {
       const databases = await fetch('/api/databases')
       const temp = await databases.json()
-      // TODO: get database.sql
       return temp.databases
-    },
-    async createDB () {
-      const name = prompt('Enter DB Title')
-
-      const result = await fetch(`/api/databases/${name}`, {
-        method: 'PUT',
-        body: JSON.stringify({sql: ''})
-      })
-
-      const {error} = await result.json()
-      if (error) {
-        alert(error)
-      } else {
-        alert('Create successful')
-      }
-    },
-    createQuiz () {
-      const id = prompt('Enter Quiz Id')
-      this.$router.push({name: 'ConfigQuizzes', params: {id, newQuiz: true}})
-    },
-    editDb (db) {}
+    }
   }
 }
 </script>
 
-<style scoped>
-  .list__tile__title {
-    font-size: 17px;
+<style>
+  .config .card__title {
+    padding-bottom: 0;
+    padding-top: 12px;
+    margin: 0;
   }
 
-  .config-card {
-    color: rgb(0, 0, 0) !important;
+  .config .card__text {
+    margin: 0;
+    padding: 0 28px;
+  }
+
+  .config .list__tile__title {
+    font-size: 18px;
+  }
+
+  .config .list__tile {
+    padding: 0 12px !important;
+  }
+
+  .config li:not(:last-child) {
+    border-bottom: 1px solid #b9b9b9;
+  }
+
+  .config .add-btn {
+    padding-top: 4px;
+    padding-bottom: 7px;
     text-align: center;
-    /* background: linear-gradient(22deg, rgb(64, 0, 94), rgb(0, 255, 221)); */
-    background: linear-gradient(43deg, #3cff00, #3cff00);
-    margin: 0 10px;
-    border: 1px solid black;
-    border-radius: 5px;
-  }
-
-  .config-card div {
-    height: 200px !important;
-  }
-
-  .config-card {
-    font-size: 1.75em;
-  }
-
-  .config-card:hover div {
-    background: rgba(0, 0, 0, 0.22);
-    color: rgb(255, 255, 255) !important;
   }
 </style>

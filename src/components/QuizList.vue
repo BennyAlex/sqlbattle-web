@@ -27,7 +27,7 @@
 <script>
 const colorPairs = [
   ['#3678da', '#ef8d0f'],
-  ['#23c7da', '#ef5d24'],
+  ['#22b6c9', '#ef5d24'],
   ['#9002ec', '#01dddc'],
   ['#2685da', '#ef78af'],
   ['#01d2d1', '#ec2bde'],
