@@ -144,7 +144,7 @@ export default {
       })
 
       const result = await response.json()
-      this.error = response.ok ? result.error : response.statusText
+      this.error = result.error
       this.result = result.result
       this.correct = result.correct
       this.loading = false
