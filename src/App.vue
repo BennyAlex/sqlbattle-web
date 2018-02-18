@@ -106,6 +106,7 @@ export default {
     margin: 0;
     padding: 0;
     padding-top: 76px;
+    padding-bottom: 36px;
   }
 
   @media only screen and (max-width: 959px) {

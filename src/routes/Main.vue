@@ -1,8 +1,8 @@
 <template>
-  <loading v-if="loading"/>
-  <v-container grid-list-xl v-else>
+  <v-container grid-list-xl>
     <h1>Quiz Auswählen:</h1>
-    <quiz-list :quizzes="quizzes"/>
+    <loading v-if="loading"/>
+    <quiz-list :quizzes="quizzes" v-else/>
   </v-container>
 </template>
 
@@ -15,26 +15,27 @@ export default {
     QuizList,
     Loading
   },
-  data () {
+  data() {
     return {
       loading: true,
       quizzes: []
     }
   },
-  async mounted () {
+  async mounted() {
     this.loading = true
     this.quizzes = await this.getQuizzes()
     this.loading = false
   },
   methods: {
-    async getQuizzes () {
-      const quizzes = await fetch('/api/quizzes')
-      const tmp = await quizzes.json()
-      return tmp.quizzes
+    async getQuizzes() {
+      const response = await fetch('/api/quizzes')
+      if (!response.ok) {
+        alert(response.statusText)
+        return
+      }
+      const res = await response.json()
+      return res.quizzes
     }
   }
 }
 </script>
-
-<style scoped>
-</style>
