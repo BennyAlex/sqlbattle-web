@@ -1,116 +1,140 @@
 <template>
-  <div v-if="!quizFinished">
-    <div v-if="quiz" style="height: 100vh">
-      <h4>{{ quiz.name }}</h4>
-      <h2>Frage {{ questionIndex + 1 }} / {{ quiz.questions.length }}: {{ quiz.questions[questionIndex].question }}</h2>
-      <div id="divBody">
-        <div id="divInput">
-          <v-text-field
-            name="textareaStatement"
-            label="SQL Statement"
-            textarea
-            v-model="statement"
-            id="textareaStatement"
-          />
-        </div>
-        <div v-if="sqlResult" id="divOutput">
-          <sql-table :fields="sqlResult.fields" :rows="sqlResult.rows"/>
-        </div>
-        <v-container>
-          <v-layout justify-center>
-            <v-flex xs8>
-              <v-card>
-                <v-card-text>
-                  <v-pagination :length="quiz.questions.length" v-model="page" @input="pageSelected"/>
-                </v-card-text>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-container>
-        <div>
-          <v-btn fab dark color="pink" @click="run" fixed bottom right>
-            <v-icon dark>play_arrow</v-icon>
+  <v-container fluid id="game" v-if="quiz">
+    <v-snackbar
+      auto-height
+      bottom
+      :timeout="0"
+      v-model="correct"
+      color="green accent-4"
+      id="correct"
+    >
+      Gut gemacht! Auf zur nächsten Frage :)
+    </v-snackbar>
+
+    <v-layout row wrap align-center v-if="!quizFinished">
+      <v-flex xs12 lg7>
+        <h4>{{ quiz.name }}</h4>
+        <h3>Frage {{ questionIndex + 1 }} von {{ quiz.questions.length }}:</h3>
+        <h2>{{ quiz.questions[questionIndex].question }}</h2>
+      </v-flex>
+
+      <v-flex xs12 lg5 class="text-xs-center text-lg-right">
+        <v-btn round color="primary" @click="nextQuestion()" v-if="correct">
+          Nächste Frage!
+        </v-btn>
+        <template v-else>
+          <v-btn outline round @click="skipQuestion()" :disabled="loading">
+            Frage überspringen
           </v-btn>
-          <v-speed-dial
-            fixed
-            bottom
-            left
-            direction="right"
-            transition="scale-transition"
-          >
-            <v-btn slot="activator" color="pink" dark fab hover>
-              <v-icon>more_horiz</v-icon>
-              <v-icon>close</v-icon>
-            </v-btn>
-            <v-btn fab dark small color="pink" @click="showAnswer">
-              <v-icon dark>lightbulb_outline</v-icon>
-            </v-btn>
-            <v-btn fab dark small color="pink" @click="goToPreviousQuestion" v-show="questionIndex > 0">
-              <v-icon dark>skip_previous</v-icon>
-            </v-btn>
-            <v-btn fab dark small color="pink" @click="goToNextQuestion">
-              <v-icon dark>skip_next</v-icon>
-            </v-btn>
-          </v-speed-dial>
-        </div>
+          <v-btn outline round @click="showAnswer" :disabled="loading">
+            Lösung anzeigen
+          </v-btn>
+          <v-btn round color="primary" @click="run" :disabled="loading || !statement">
+            ausführen
+            <v-icon>play_arrow</v-icon>
+          </v-btn>
+        </template>
+
+      </v-flex>
+
+      <v-flex xs12 md10 lg8 offset-md1 offset-lg2>
+        <v-text-field
+          label="SQL Statement"
+          textarea
+          rows="10"
+          v-model="statement"
+        />
+      </v-flex>
+
+      <v-flex xs12 v-if="error">
+        <p id="error" class="error-text">
+          Das war leider falsch! <br>
+          Grund: {{ error }}
+        </p>
+      </v-flex>
+
+      <v-flex xs12 v-if="loading">
+        <loading text="SQL-Abfrage wird verarbeitet, bitte warten..."/>
+      </v-flex>
+
+      <v-flex xs12 lxl6 v-else-if="result">
+        <sql-table :fields="result.fields" :rows="result.rows"/>
+      </v-flex>
+
+      <div id="next-btn">
+        <v-btn round color="primary" class="mt-5" @click="nextQuestion()" v-if="correct">
+          Nächste Frage!
+        </v-btn>
       </div>
-    </div>
-  </div>
-  <div v-else>
-    <div>
-      <h1 align="center">Gut gemacht!<br>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h1>
-      <h2 align="center">Benötigte Zeit: { {msToTime(endTime - startTime) }}</h2>
-      <h2 align="center">Fragen gelöst: {{ questionIndex + 1 }}</h2>
-      <v-btn @click="backToMenu">Zurück zum Menü</v-btn>
-    </div>
-  </div>
+    </v-layout>
+
+    <v-container class="text-xs-center" v-else>
+      <h1>Gut gemacht!<br>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h1>
+      <h2>Benötigte Zeit: {{ msToTime(endTime - startTime) }}</h2>
+      <h2>Fragen richtig beantwortet: {{solvedQuestions}} von {{ questionIndex + 1 }}</h2>
+      <v-btn class="mt-4" :to="{name: 'Main'}" color="primary" round>Zurück zum Menü</v-btn>
+    </v-container>
+  </v-container>
+  <loading v-else/>
 </template>
 <script>
 import SqlTable from '@/components/SqlTable'
+import Loading from '@/components/Loading'
 
 export default {
   name: 'Quiz',
+
   components: {
+    Loading,
     SqlTable
   },
+
   props: {
     quizID: {
       type: [String, Number],
       required: true
     }
   },
-  data () {
+
+  data() {
     return {
-      page: 0,
-      code: 'const noop = () => {}',
-      quiz: undefined,
+      quiz: null,
+      solvedQuestions: 0,
       questionIndex: 0,
       statement: '',
-      result: undefined,
-      canRunStatement: true,
-
+      loading: false,
       quizFinished: false,
       startTime: Date.now(),
-      endTime: undefined,
-
-      sqlResult: undefined
+      endTime: null,
+      hintUsed: false,
+      error: null,
+      result: null,
+      correct: false
     }
   },
-  async mounted () {
-    const quiz = await fetch(`/api/quizzes/${this.quizID}`)
-    this.quiz = await quiz.json()
-    this.page = this.questionIndex + 1
+
+  async mounted() {
+    const response = await fetch(`/api/quizzes/${this.quizID}`)
+    if (!response.ok) {
+      alert(response.statusText)
+      return
+    }
+    this.quiz = await response.json()
     document.addEventListener('keydown', this.onKeydown)
   },
-  beforeDestroy () {
+
+  beforeDestroy() {
     document.removeEventListener('keydown', this.onKeydown)
   },
-  methods: {
-    async run () {
-      if (!this.canRunStatement) return
 
-      this.canRunStatement = false
-      const result = await fetch('/api/query', {
+  methods: {
+    async run() {
+      if (this.loading) return
+
+      this.loading = true
+      this.error = null
+
+      const response = await fetch('/api/query', {
         method: 'POST',
         body: JSON.stringify({
           db: this.quiz.db,
@@ -119,98 +143,116 @@ export default {
         })
       })
 
-      this.result = await result.json()
+      const result = await response.json()
+      this.error = response.ok ? result.error : response.statusText
+      this.result = result.result
+      this.correct = result.correct
+      this.loading = false
+    },
 
-      if (this.result.error) alert(this.result.error)
-      else {
-        this.sqlResult = this.result.result[0]
-        if (this.result.correct) {
-          setTimeout(() => alert('Well done! Solve the next Question!'), 0)
-          this.statement = ''
-          this.goToNextQuestion()
-        }
-      }
-      this.canRunStatement = true
+    showAnswer() {
+      this.hintUsed = true
+      this.statement = this.quiz.questions[this.questionIndex].answer
     },
-    showAnswer () {
-      alert(this.quiz.questions[this.questionIndex].answer)
+
+    skipQuestion() {
+      this.hintUsed = true
+      this.nextQuestion()
     },
-    goToNextQuestion () {
+
+    nextQuestion() {
+      if (!this.hintUsed) this.solvedQuestions++
+      else this.hintUsed = false
       if (this.questionIndex < this.quiz.questions.length - 1) {
         this.questionIndex++
-        this.page++
+        this.statement = ''
       } else {
-        alert('Congratulations! Quiz finished!')
         this.quizFinished = true
         this.endTime = Date.now()
       }
+      this.correct = false
+      this.result = null
     },
-    goToPreviousQuestion () {
-      if (this.questionIndex > 0) {
-        this.questionIndex--
-      }
-    },
-    onKeydown (e) {
+
+    onKeydown(e) {
       if (!e.ctrlKey && !e.metaKey) {
         return
       }
-      if (e.key === 'Enter') {
+      if (e.key.toLowerCase() === 'enter') {
         e.preventDefault()
         this.run()
       }
     },
-    msToTime (duration) {
+
+    msToTime(duration) {
       const leftPad = i => i < 10 ? '0' + Math.floor(i) : Math.floor(i)
       const seconds = leftPad((duration / 1000) % 60)
       const minutes = leftPad((duration / (1000 * 60)) % 60)
       const hours = leftPad((duration / (1000 * 60 * 60)) % 24)
-
       return `${hours}:${minutes}:${seconds}`
-    },
-    backToMenu () {
-      this.$router.replace('/')
-    },
-    pageSelected (value) {
-      this.questionIndex = value - 1
-      this.page = value
     }
   }
 }
 </script>
 
 <style>
-  #textareaStatement {
-    resize: none;
-    outline: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    font-family: monospace;
-    width: 100%;
-    height: 330px;
-    overflow: auto;
-    display: block;
-    font-size: inherit;
+  #correct {
+    color: black;
+    font-weight: bold;
+    font-size: 19px;
   }
 
-  #divInput {
-    width: 100%;
-    height: 50%;
-    overflow: auto;
-    position: absolute;
+  #error {
+    font-size: 19px !important;
+    font-weight: bold;
   }
 
-  #divOutput {
-    width: 100%;
-    height: 50%;
-    overflow: auto;
-    position: absolute;
-    bottom: 0;
+  #game {
+    padding: 20px 16px;
   }
 
-  #divBody {
+  #next-btn {
     width: 100%;
-    height: 100%;
-    position: relative;
+    text-align: center;
+    margin-bottom: 62px;
+  }
+
+  @media only screen and (min-width: 600px) {
+    #game {
+      padding: 20px 26px;
+    }
+
+    #correct {
+      font-size: 20px;
+      margin-bottom: 60px;
+    }
+
+    #next-btn {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 98px;
+    }
+  }
+
+  @media only screen and (min-width: 960px) {
+    #game {
+      padding: 22px 40px;
+    }
+
+    #correct {
+      font-size: 21px;
+    }
+  }
+
+  @media only screen and (min-width: 1264px) {
+    #game {
+      padding: 22px 54px;
+    }
+  }
+
+  @media only screen and (min-width: 1904px) {
+    #game {
+      padding: 22px 96px;
+    }
   }
 </style>

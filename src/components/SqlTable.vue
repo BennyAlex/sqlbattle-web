@@ -1,20 +1,22 @@
 <template>
-  <table>
-    <thead>
+  <div style="overflow: auto">
+    <table class="mx-auto text-xs-center">
+      <thead>
       <tr>
-        <th v-for="(field, index) in fields" :key="index">
+        <th v-for="(field, index) in fields" :key="index" class="main-bg">
           {{ field }}
         </th>
       </tr>
-    </thead>
-    <tbody>
+      </thead>
+      <tbody>
       <tr v-for="(row, index) in rows" :key="index">
         <td v-for="(cell, i) in row" :key="i">
           {{ cell }}
         </td>
       </tr>
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -23,13 +25,13 @@ export default {
   props: {
     fields: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     },
     rows: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     }
@@ -39,7 +41,6 @@ export default {
 
 <style scoped>
   table {
-    border: 1px solid black;
     border-spacing: 0;
   }
 
@@ -49,11 +50,22 @@ export default {
 
   th {
     font-weight: bold;
-    background: black;
     color: white;
   }
 
-  tr:nth-child(odd) {
-    background: rgb(199, 199, 199);
+  tr td:first-child {
+    border-left: 1px solid #1769aa;
+  }
+
+  tr td:last-child {
+    border-right: 1px solid #1769aa;
+  }
+
+  tr:last-child td {
+    border-bottom: 1px solid #1769aa;
+  }
+
+  tr:nth-child(even) {
+    background: rgb(209, 209, 209);
   }
 </style>

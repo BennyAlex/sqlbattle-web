@@ -36,14 +36,14 @@ export default {
   }
 
   p {
-    font-size: 15px !important;
+    font-size: 15px;
   }
 
   a {
     text-decoration: none;
   }
 
-  p.error-text {
+  .error-text {
     font-size: 17px !important;
     color: red;
     margin: 20px;
@@ -105,13 +105,30 @@ export default {
   .dialog-card-container {
     margin: 0;
     padding: 0;
-    padding-top: 76px;
+    padding-top: 50px;
     padding-bottom: 36px;
   }
 
-  @media only screen and (max-width: 959px) {
+  .dialog-card-container > div {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  @media only screen and (min-width: 600px) {
     .dialog-card-container {
-      padding-top: 66px;
+      padding-top: 58px;
+    }
+  }
+
+  @media only screen and (min-width: 960px) {
+    .dialog-card-container {
+      padding-top: 74px;
+    }
+  }
+
+  @media only screen and (min-width: 1264px) {
+    .dialog-card-container {
+      padding-top: 80px;
     }
   }
 </style>
