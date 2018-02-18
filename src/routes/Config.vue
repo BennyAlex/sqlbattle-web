@@ -14,7 +14,7 @@
                   <v-list-tile-title v-text="' - ' + db.id"/>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <database-dialog :database="db" @refresh="loadData()" :key="db.id">
+                  <database-dialog :dbID="db.id" @refresh="loadData()" :key="db.id">
                     <v-btn icon>
                       <v-icon>edit</v-icon>
                     </v-btn>
