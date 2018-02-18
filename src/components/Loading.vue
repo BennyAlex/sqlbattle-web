@@ -7,7 +7,7 @@
         :width="3"
         class="primary--text"
       />
-      <div style="font-size: 16px">{{ text }}</div>
+      <div style="font-size: 17px">{{ text }}</div>
     </div>
   </div>
 </template>

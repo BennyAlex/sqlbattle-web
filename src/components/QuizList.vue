@@ -25,17 +25,16 @@
   </v-layout>
 </template>
 <script>
-const colorPairs = [
-  ['#3678da', '#ef8d0f'],
-  ['#22b6c9', '#ef5d24'],
-  ['#9002ec', '#01dddc'],
-  ['#2685da', '#ef78af'],
-  ['#01d2d1', '#ec2bde'],
-  ['#2369d6', '#2cdfa3'],
-  ['#2c68c0', '#01e3e2']
+const colors = [
+  '#17c158',
+  '#13b0c8',
+  '#1b45da',
+  '#5818b5',
+  '#a318e5',
+  '#f654f3',
 ]
 
-const len = colorPairs.length - 1
+const len = colors.length - 1
 
 export default {
   name: 'QuizList',
@@ -46,10 +45,14 @@ export default {
     }
   },
   methods: {
-    getBackground () {
+    getBackground() {
       const angle = Math.round(Math.random() * 360)
-      const pair = colorPairs[Math.round(Math.random() * len)]
-      return `linear-gradient(${angle}deg, ${pair[0]}, ${pair[1]})`
+      const c1 = colors[Math.round(Math.random() * len)]
+      let c2 = colors[Math.round(Math.random() * len)]
+      while (c1 === c2) {
+        c2 = colors[Math.round(Math.random() * len)]
+      }
+      return `linear-gradient(${angle}deg, ${c1}, ${c2})`
     }
   }
 }

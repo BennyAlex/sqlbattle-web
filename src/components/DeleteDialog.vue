@@ -10,7 +10,7 @@
         </v-btn>
       </v-toolbar>
       <v-card-text>
-          <h2>{{ title }}-ID: {{ id }}</h2>
+          <h2>{{ title }}-Name: {{ name || id }}</h2>
           <div style="font-size: 16px">
             Möchten Sie {{ name || id }} wirklich löschen?
           </div>
