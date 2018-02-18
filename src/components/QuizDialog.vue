@@ -116,7 +116,7 @@ export default {
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
-        const result = await fetch(`/api/quizzes/${this.id}`, {
+        const result = await fetch(`/api/quizzes/${this.id || this.name.toLowerCase() }`, {
           method: 'PUT',
           body: JSON.stringify({
             name: this.name,
