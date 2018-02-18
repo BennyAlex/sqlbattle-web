@@ -10,14 +10,14 @@
         </v-btn>
       </v-toolbar>
       <v-card-text>
-          <h2>{{ title }}-Name: {{ name || id }}</h2>
-          <div style="font-size: 16px">
-            Möchten Sie {{ name || id }} wirklich löschen?
-          </div>
-          <p class="error-text" v-if="error">
-            Es ist ein Fehler aufgetreten: <br>
-            <b>{{ error }}</b>
-          </p>
+        <h2>{{ title }}-Name: {{ name || id }}</h2>
+        <div style="font-size: 16px">
+          Möchten Sie {{ name || id }} wirklich löschen?
+        </div>
+        <p class="error-text" v-if="error">
+          Es ist ein Fehler aufgetreten: <br>
+          <b>{{ error }}</b>
+        </p>
       </v-card-text>
       <v-card-actions>
         <v-spacer/>
@@ -48,18 +48,24 @@ export default {
       default: null
     }
   },
-  data () {
+  data() {
     return {
       dialog: false,
       error: null
     }
   },
   methods: {
-    async deleteItem () {
-      const result = await fetch(`/api/${this.type}/${this.id}`, {
+    async deleteItem() {
+      const response = await fetch(`/api/${this.type}/${this.id}`, {
         method: 'DELETE'
       })
-      const {error} = await result.json()
+
+      if (!response.ok) {
+        alert(response.statusText)
+        return
+      }
+
+      const {error} = await response.json()
       if (error) this.error = error
       else {
         this.$emit('refresh')

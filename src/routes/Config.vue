@@ -1,5 +1,5 @@
 <template>
-  <v-container class="config" grid-list-xl>
+  <v-container id="config" grid-list-xl>
     <v-layout row wrap>
       <v-flex xs12 md6>
         <v-card>
@@ -102,13 +102,15 @@ import DatabaseDialog from '@/components/DatabaseDialog'
 import DeleteDialog from '@/components/DeleteDialog'
 
 export default {
+  name: 'Config',
+
   components: {
     DatabaseDialog,
     DeleteDialog,
     QuizDialog,
     Loading
   },
-  name: 'Config',
+
   data() {
     return {
       loading: true,
@@ -117,9 +119,11 @@ export default {
       quizzes: []
     }
   },
+
   async mounted() {
     await this.loadData()
   },
+
   methods: {
     async loadData() {
       this.loading = true
@@ -127,11 +131,13 @@ export default {
       this.quizzes = await this.getQuizzes()
       this.loading = false
     },
+
     async getQuizzes() {
       const quizzes = await fetch('/api/quizzes')
       const temp = await quizzes.json()
       return temp.quizzes
     },
+
     async getDatabases() {
       const databases = await fetch('/api/databases')
       const temp = await databases.json()
@@ -142,30 +148,30 @@ export default {
 </script>
 
 <style>
-  .config .card__title {
+  #config .card__title {
     padding-bottom: 0;
     padding-top: 12px;
     margin: 0;
   }
 
-  .config .card__text {
+  #config .card__text {
     margin: 0;
     padding: 0 28px;
   }
 
-  .config .list__tile__title {
+  #config .list__tile__title {
     font-size: 18px;
   }
 
-  .config .list__tile {
+  #config .list__tile {
     padding: 0 12px !important;
   }
 
-  .config li:not(:last-child) {
+  #config li:not(:last-child) {
     border-bottom: 1px solid #b9b9b9;
   }
 
-  .config .add-btn {
+  #config .add-btn {
     padding-top: 4px;
     padding-bottom: 7px;
     text-align: center;

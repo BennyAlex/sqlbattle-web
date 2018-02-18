@@ -14,8 +14,13 @@
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text class="dialog-card-container">
-        <v-container style="padding: 12px">
+        <v-container>
           <v-form ref="form">
+            <p class="error-text" v-if="error">
+              Es ist ein Fehler aufgetreten: <br>
+              <b>{{ error }}</b>
+            </p>
+
             <v-text-field label="Name" v-model="name" required :rules="required"/>
 
             <v-select
@@ -116,7 +121,7 @@ export default {
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
-        const result = await fetch(`/api/quizzes/${this.id || this.name.toLowerCase() }`, {
+        const response = await fetch(`/api/quizzes/${this.id || this.name.toLowerCase() }`, {
           method: 'PUT',
           body: JSON.stringify({
             name: this.name,
@@ -124,7 +129,13 @@ export default {
             questions: this.questions.map(({question, answer}) => ({question, answer}))
           })
         })
-        const {error} = await result.json()
+
+        if (!response.ok) {
+          alert(response.statusText)
+          return
+        }
+
+        const {error} = await response.json()
         if (error) this.error = error
         else this.close()
       }

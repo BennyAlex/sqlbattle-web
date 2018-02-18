@@ -29,10 +29,12 @@ export default {
   methods: {
     async getQuizzes() {
       const response = await fetch('/api/quizzes')
+
       if (!response.ok) {
         alert(response.statusText)
         return
       }
+
       const res = await response.json()
       return res.quizzes
     }
