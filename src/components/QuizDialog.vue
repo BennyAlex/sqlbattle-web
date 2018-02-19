@@ -13,7 +13,7 @@
           <v-btn flat @click="save()" dark>Speichern</v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <v-card-text class="dialog-card-container">
+      <v-content>
         <v-container>
           <v-form ref="form">
             <p class="error-text" v-if="error">
@@ -71,7 +71,7 @@
             </p>
           </v-form>
         </v-container>
-      </v-card-text>
+      </v-content>
     </v-card>
   </v-dialog>
 </template>

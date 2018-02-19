@@ -101,34 +101,4 @@ export default {
     text-align: center;
     flex-wrap: wrap;
   }
-
-  .dialog-card-container {
-    margin: 0;
-    padding: 0;
-    padding-top: 50px;
-    padding-bottom: 36px;
-  }
-
-  .dialog-card-container > div {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  @media only screen and (min-width: 600px) {
-    .dialog-card-container {
-      padding-top: 58px;
-    }
-  }
-
-  @media only screen and (min-width: 960px) {
-    .dialog-card-container {
-      padding-top: 74px;
-    }
-  }
-
-  @media only screen and (min-width: 1264px) {
-    .dialog-card-container {
-      padding-top: 80px;
-    }
-  }
 </style>

@@ -13,7 +13,7 @@
           <v-btn flat @click="save()" dark>Speichern</v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <v-card-text class="dialog-card-container">
+      <v-content>
         <v-container>
           <v-form ref="form">
             <p class="error-text" v-if="error">
@@ -24,8 +24,7 @@
             <h2 v-if="dbID">Datenbank-Name: {{ id }}</h2>
             <v-text-field v-model="id" label="Datenbank Name" required :rules="required" v-else/>
 
-
-            <v-text-field textarea label="SQL-Statement" v-model="sql" required :rules="required" rows="16"/>
+            <v-text-field textarea label="SQL-Statement" v-model="sql" required :rules="required" :rows="rows"/>
 
             <p class="error-text" v-if="error">
               Es ist ein Fehler aufgetreten: <br>
@@ -33,13 +32,14 @@
             </p>
           </v-form>
         </v-container>
-      </v-card-text>
+      </v-content>
     </v-card>
   </v-dialog>
 </template>
 <script>
 export default {
   name: 'DatabaseDialog',
+
   props: {
     dbID: {
       type: [Number, String],
@@ -50,6 +50,7 @@ export default {
       default: false
     }
   },
+
   data() {
     return {
       dialog: false,
@@ -61,12 +62,30 @@ export default {
       ]
     }
   },
+
+  computed: {
+    rows() {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs':
+          return 10
+        case 'sm':
+          return 14
+        case 'md':
+          return 18
+        case 'lg':
+          return 22
+        case 'xl':
+          return 26
+      }
+    }
+  },
+
   async mounted() {
     if (this.dbID) {
       const response = await fetch(`/api/databases/${this.dbID}`)
 
       if (!response.ok) {
-        alert(response.statusText)
+        console.error(response.statusText)
         return
       }
 
@@ -75,6 +94,7 @@ export default {
       this.sql = db.sql
     }
   },
+
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
@@ -87,6 +107,7 @@ export default {
         else this.close()
       }
     },
+
     close() {
       this.$emit('refresh')
       this.error = null
