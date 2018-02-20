@@ -61,8 +61,8 @@
         <sql-table :fields="result.fields" :rows="result.rows"/>
       </v-flex>
 
-      <div id="next-btn">
-        <v-btn round color="primary" class="mt-5" @click="nextQuestion()" v-if="correct">
+      <div id="next-btn" v-if="correct">
+        <v-btn round color="primary" class="mt-5" @click="nextQuestion()">
           Nächste Frage!
         </v-btn>
       </div>
@@ -131,15 +131,15 @@ export default {
     rows() {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs':
-          return 8
+          return 6
         case 'sm':
-          return 12
+          return 7
         case 'md':
-          return 16
+          return 9
         case 'lg':
-          return 20
+          return 10
         case 'xl':
-          return 24
+          return 11
       }
     }
   },
@@ -161,7 +161,7 @@ export default {
       })
 
       const result = await response.json()
-      this.error = response.ok ? result.error : response.statusText
+      this.error = result.error ? result.error : response.ok ? null : response.statusText
       this.result = result.result
       this.correct = result.correct
       this.loading = false

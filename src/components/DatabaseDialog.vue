@@ -2,15 +2,16 @@
   <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition">
     <slot slot="activator"/>
     <v-card>
+
       <v-toolbar class="main-bg" fixed>
-        <v-btn icon @click="close()" dark>
+        <v-btn icon @click="close()" dark :disabled="isSaving">
           <v-icon>close</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
         <v-toolbar-title>Datenbank {{ dbID ? 'bearbeiten' : 'anlegen'}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn flat @click="save()" dark>Speichern</v-btn>
+          <v-btn flat @click="save()" dark :disabled="isSaving">{{ isSaving ? 'Wird gespeichert...' : 'Speichern' }}</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <v-content>
@@ -55,6 +56,7 @@ export default {
     return {
       dialog: false,
       error: null,
+      isSaving: false,
       id: '',
       sql: '',
       required: [
@@ -67,15 +69,15 @@ export default {
     rows() {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs':
-          return 10
+          return 11
         case 'sm':
-          return 14
+          return 15
         case 'md':
-          return 18
+          return 19
         case 'lg':
-          return 22
+          return 23
         case 'xl':
-          return 26
+          return 27
       }
     }
   },
@@ -85,7 +87,7 @@ export default {
       const response = await fetch(`/api/databases/${this.dbID}`)
 
       if (!response.ok) {
-        console.error(response.statusText)
+        alert(response.statusText)
         return
       }
 
@@ -98,13 +100,15 @@ export default {
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
-        const result = await fetch(`/api/databases/${this.id}`, {
+        this.isSaving = true
+        const response = await fetch(`/api/databases/${this.id}`, {
           method: 'PUT',
           body: JSON.stringify({sql: this.sql})
         })
-        const {error} = await result.json()
-        if (error) this.error = error
-        else this.close()
+        const result = await response.json()
+        this.error = result.error ? result.error : response.ok ? null : response.statusText
+        this.isSaving = false
+        if (!this.error) this.close()
       }
     },
 

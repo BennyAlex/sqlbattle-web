@@ -3,15 +3,15 @@
     <v-layout row wrap>
       <v-flex xs12 md6>
         <v-card>
-          <v-card-title>
+          <v-card-title class="card-title">
             <h1>Datenbanken:</h1>
           </v-card-title>
-          <v-card-text>
+          <v-card-text class="card-text">
             <loading v-show="loading"/>
             <v-list v-show="!loading">
-              <v-list-tile v-for="db in databases" :key="db.id">
+              <v-list-tile v-for="db in databases" :key="db.id" class="list-tile">
                 <v-list-tile-content>
-                  <v-list-tile-title v-text="' - ' + db.id"/>
+                  <v-list-tile-title class="list-title" v-text="db.id"/>
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <database-dialog :dbID="db.id" @refresh="loadData()" :key="db.id">
@@ -48,15 +48,15 @@
 
       <v-flex xs12 md6>
         <v-card>
-          <v-card-title>
+          <v-card-title class="card-title">
             <h1>Quizze:</h1>
           </v-card-title>
-          <v-card-text>
+          <v-card-text class="card-text">
             <loading v-show="loading"/>
             <v-list v-show="!loading">
-              <v-list-tile v-for="quiz in quizzes" :key="quiz.id">
+              <v-list-tile v-for="quiz in quizzes" :key="quiz.id" class="list-tile">
                 <v-list-tile-content>
-                  <v-list-tile-title v-text="' - ' + quiz.name"/>
+                  <v-list-tile-title class="list-title" v-text="quiz.name"/>
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <quiz-dialog :databases="databases" :quizID="quiz.id" @refresh="loadData()">
@@ -100,11 +100,13 @@ import Loading from '@/components/Loading'
 import QuizDialog from '@/components/QuizDialog'
 import DatabaseDialog from '@/components/DatabaseDialog'
 import DeleteDialog from '@/components/DeleteDialog'
+import SIcon from '@/components/s-icon'
 
 export default {
   name: 'Config',
 
   components: {
+    SIcon,
     DatabaseDialog,
     DeleteDialog,
     QuizDialog,
@@ -148,22 +150,22 @@ export default {
 </script>
 
 <style>
-  #config .card__title {
+  #config .card-title {
     padding-bottom: 0;
-    padding-top: 12px;
+    padding-top: 10px;
     margin: 0;
   }
 
-  #config .card__text {
+  #config .card-text {
     margin: 0;
     padding: 0 28px;
   }
 
-  #config .list__tile__title {
+  #config .list-title {
     font-size: 18px;
   }
 
-  #config .list__tile {
+  #config .list-tile {
     padding: 0 12px !important;
   }
 
