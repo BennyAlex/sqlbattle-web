@@ -2,18 +2,19 @@
   <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition">
     <slot slot="activator"/>
     <v-card>
+      <!-- TODO: absolute center title -->
       <v-toolbar class="main-bg" fixed>
-        <v-btn icon @click="close()" dark>
+        <v-btn icon @click="close()" dark :disabled="isSaving">
           <v-icon>close</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
         <v-toolbar-title>Quiz {{quizID ? 'bearbeiten' : 'anlegen'}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn flat @click="save()" dark>Speichern</v-btn>
+          <v-btn flat @click="save()" dark :disabled="isSaving">{{ isSaving ? 'Wird gespeichert...' : 'Speichern' }}</v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <v-card-text class="dialog-card-container">
+      <v-content>
         <v-container>
           <v-form ref="form">
             <p class="error-text" v-if="error">
@@ -71,7 +72,7 @@
             </p>
           </v-form>
         </v-container>
-      </v-card-text>
+      </v-content>
     </v-card>
   </v-dialog>
 </template>
@@ -95,6 +96,7 @@ export default {
       id: null,
       name: '',
       db: '',
+      isSaving: false,
       questions: [{
         question: '',
         answer: ''
@@ -121,6 +123,7 @@ export default {
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
+        this.isSaving = true
         const response = await fetch(`/api/quizzes/${this.id || this.name.toLowerCase() }`, {
           method: 'PUT',
           body: JSON.stringify({
@@ -130,14 +133,10 @@ export default {
           })
         })
 
-        if (!response.ok) {
-          alert(response.statusText)
-          return
-        }
-
-        const {error} = await response.json()
-        if (error) this.error = error
-        else this.close()
+        const result = await response.json()
+        this.error = result.error ? result.error : response.ok ? null : response.statusText
+        this.isSaving = false
+        if (!this.error) this.close()
       }
     },
     addQuestion() {

@@ -41,7 +41,7 @@
         <v-text-field
           label="SQL Statement"
           textarea
-          rows="10"
+          :rows="rows"
           v-model="statement"
         />
       </v-flex>
@@ -61,17 +61,17 @@
         <sql-table :fields="result.fields" :rows="result.rows"/>
       </v-flex>
 
-      <div id="next-btn">
-        <v-btn round color="primary" class="mt-5" @click="nextQuestion()" v-if="correct">
+      <div id="next-btn" v-if="correct">
+        <v-btn round color="primary" class="mt-5" @click="nextQuestion()">
           Nächste Frage!
         </v-btn>
       </div>
     </v-layout>
 
     <v-container class="text-xs-center" v-else>
-      <h1>Gut gemacht!<br>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h1>
-      <h2>Benötigte Zeit: {{ msToTime(endTime - startTime) }}</h2>
-      <h2>Fragen richtig beantwortet: {{solvedQuestions}} von {{ questionIndex + 1 }}</h2>
+      <h2>Gut gemacht!<br>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h2>
+      <h3>Benötigte Zeit: {{ msToTime(endTime - startTime) }}</h3>
+      <h3>Fragen richtig beantwortet: {{solvedQuestions}} von {{ questionIndex + 1 }}</h3>
       <v-btn class="mt-4" :to="{name: 'Main'}" color="primary" round>Zurück zum Menü</v-btn>
     </v-container>
   </v-container>
@@ -127,6 +127,23 @@ export default {
     document.removeEventListener('keydown', this.onKeydown)
   },
 
+  computed: {
+    rows() {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs':
+          return 6
+        case 'sm':
+          return 7
+        case 'md':
+          return 9
+        case 'lg':
+          return 10
+        case 'xl':
+          return 11
+      }
+    }
+  },
+
   methods: {
     async run() {
       if (this.loading) return
@@ -144,7 +161,7 @@ export default {
       })
 
       const result = await response.json()
-      this.error = result.error
+      this.error = result.error ? result.error : response.ok ? null : response.statusText
       this.result = result.result
       this.correct = result.correct
       this.loading = false
