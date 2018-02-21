@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Main from '@/routes/Main'
 import Quiz from '@/routes/Quiz'
 import Config from '@/routes/Config'
+import PageNotFound from '@/routes/PageNotFound'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/config',
       name: 'Config',
       component: Config
+    },
+    {
+      path: '*',
+      name: 'PageNotFound',
+      component: PageNotFound
     }
   ]
 })
