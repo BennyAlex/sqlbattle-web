@@ -1,7 +1,7 @@
 <template>
   <v-app light>
     <v-toolbar app fixed class="no-text-highlight main-bg">
-      <v-btn absolute flat icon class="z-index-5" v-show="!isMain" @click="$router.go('-1')" dark>
+      <v-btn flat icon dark class="z-index-5" :to="{name: 'Main'}" v-show="$route.name === 'Quiz'">
         <v-icon>arrow_back</v-icon>
       </v-btn>
 
@@ -22,12 +22,7 @@
 </template>
 <script>
 export default {
-  name: 'App',
-  computed: {
-    isMain() {
-      return this.$route.path === '/' || this.$route.name === 'Main'
-    }
-  }
+  name: 'App'
 }
 </script>
 <style>
@@ -51,8 +46,8 @@ export default {
   }
 
   .main-bg {
-    background: #1769aa !important;
-    background-color: #1769aa !important;
+    background: #18639c !important;
+    background-color: #18639c !important;
     color: white !important;
   }
 

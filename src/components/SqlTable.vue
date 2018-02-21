@@ -54,18 +54,22 @@ export default {
   }
 
   tr td:first-child {
-    border-left: 1px solid #1769aa;
+    border-left: 1px solid;
   }
 
   tr td:last-child {
-    border-right: 1px solid #1769aa;
+    border-right: 1px solid;
   }
 
   tr:last-child td {
-    border-bottom: 1px solid #1769aa;
+    border-bottom: 1px solid ;
   }
 
   tr:nth-child(even) {
     background: rgb(209, 209, 209);
+  }
+
+  tr td {
+    border-color: #18639c;
   }
 </style>

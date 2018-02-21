@@ -100,13 +100,11 @@ import Loading from '@/components/Loading'
 import QuizDialog from '@/components/QuizDialog'
 import DatabaseDialog from '@/components/DatabaseDialog'
 import DeleteDialog from '@/components/DeleteDialog'
-import SIcon from '@/components/s-icon'
 
 export default {
   name: 'Config',
 
   components: {
-    SIcon,
     DatabaseDialog,
     DeleteDialog,
     QuizDialog,

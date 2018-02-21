@@ -6,9 +6,31 @@
       :timeout="0"
       v-model="correct"
       color="green accent-4"
-      id="correct"
+      class="snackbar"
     >
       Gut gemacht! Auf zur nächsten Frage :)
+    </v-snackbar>
+
+    <v-snackbar
+      auto-height
+      bottom
+      :timeout="0"
+      v-model="wrong"
+      color="red accent-4"
+      class="snackbar"
+    >
+      Das war leider Falsch, versuchs nochmal :)
+    </v-snackbar>
+
+    <v-snackbar
+      auto-height
+      bottom
+      :timeout="0"
+      v-model="skipped"
+      color="yellow accent-4"
+      class="snackbar"
+    >
+      So sieht die Lösung aus, du kannst nun zur nächsten Frage.
     </v-snackbar>
 
     <v-layout row wrap align-center v-if="!quizFinished">
@@ -19,11 +41,11 @@
       </v-flex>
 
       <v-flex xs12 lg5 class="text-xs-center text-lg-right">
-        <v-btn round color="primary" @click="nextQuestion()" v-if="correct">
+        <v-btn round color="primary" @click="nextQuestion" v-if="correct">
           Nächste Frage!
         </v-btn>
         <template v-else>
-          <v-btn outline round @click="skipQuestion()" :disabled="loading">
+          <v-btn outline round @click="skipQuestion" :disabled="loading">
             Frage überspringen
           </v-btn>
           <v-btn outline round @click="showAnswer" :disabled="loading">
@@ -68,6 +90,7 @@
       </div>
     </v-layout>
 
+    <!-- TODO: besser machen! -->
     <v-container class="text-xs-center" v-else>
       <h2>Gut gemacht!<br>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h2>
       <h3>Benötigte Zeit: {{ msToTime(endTime - startTime) }}</h3>
@@ -212,8 +235,8 @@ export default {
 }
 </script>
 
-<style>
-  #correct {
+<style scoped>
+  .snackbar {
     color: black;
     font-weight: bold;
     font-size: 19px;
@@ -239,7 +262,7 @@ export default {
       padding: 20px 26px;
     }
 
-    #correct {
+    .snackbar {
       font-size: 20px;
       margin-bottom: 60px;
     }
@@ -256,7 +279,7 @@ export default {
       padding: 22px 40px;
     }
 
-    #correct {
+    .snackbar {
       font-size: 21px;
     }
   }

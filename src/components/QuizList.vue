@@ -26,10 +26,9 @@
 </template>
 <script>
 const colors = [
-  '#17c158',
+  '#2ce5a5',
   '#13b0c8',
   '#1b45da',
-  '#5818b5',
   '#a318e5',
   '#f654f3',
 ]

@@ -2,16 +2,20 @@
   <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition">
     <slot slot="activator"/>
     <v-card>
-      <!-- TODO: absolute center title -->
-      <v-toolbar class="main-bg" fixed>
-        <v-btn icon @click="close()" dark :disabled="isSaving">
+      <v-toolbar fixed class="main-bg no-text-highlight">
+        <v-btn dark icon class="z-index-5" @click="close()" :disabled="isSaving">
           <v-icon>close</v-icon>
         </v-btn>
-        <v-spacer></v-spacer>
-        <v-toolbar-title>Quiz {{quizID ? 'bearbeiten' : 'anlegen'}}</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn flat @click="save()" dark :disabled="isSaving">{{ isSaving ? 'Wird gespeichert...' : 'Speichern' }}</v-btn>
+
+        <div class="app-title">
+          Quiz {{quizID ? 'bearbeiten' : 'anlegen'}}
+        </div>
+
+        <v-spacer/>
+
+        <v-toolbar-items class="z-index-5">
+          <v-btn flat @click="save()" dark :disabled="isSaving">{{ isSaving ? 'Wird gespeichert...' : 'Speichern' }}
+          </v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <v-content>
