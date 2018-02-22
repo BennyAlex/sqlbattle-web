@@ -25,16 +25,6 @@
   </v-layout>
 </template>
 <script>
-const colors = [
-  '#2ce5a5',
-  '#13b0c8',
-  '#1b45da',
-  '#a318e5',
-  '#f654f3',
-]
-
-const len = colors.length - 1
-
 export default {
   name: 'QuizList',
   props: {
@@ -46,12 +36,7 @@ export default {
   methods: {
     getBackground() {
       const angle = Math.round(Math.random() * 360)
-      const c1 = colors[Math.round(Math.random() * len)]
-      let c2 = colors[Math.round(Math.random() * len)]
-      while (c1 === c2) {
-        c2 = colors[Math.round(Math.random() * len)]
-      }
-      return `linear-gradient(${angle}deg, ${c1}, ${c2})`
+      return `linear-gradient(${angle}deg, #13b0c8, #1b45da)`
     }
   }
 }
