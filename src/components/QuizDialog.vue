@@ -62,6 +62,7 @@
                 <div class="px-3">
                   <v-text-field label="Frage" v-model="q.question" required :rules="required"/>
                   <v-text-field label="Mögliche Antwort" v-model="q.answer" required :rules="required"/>
+                  <v-text-field label="Hinweis" v-model="q.help"/>
                 </div>
               </div>
 
@@ -103,7 +104,8 @@ export default {
       isSaving: false,
       questions: [{
         question: '',
-        answer: ''
+        answer: '',
+        help: undefined
       }],
       required: [
         v => !!v || 'Dies ist ein Pflichtfeld'
@@ -128,12 +130,18 @@ export default {
     async save() {
       if (this.$refs.form.validate()) {
         this.isSaving = true
+
+        this.questions.forEach(function(q) {
+          if(q.help === '')
+            q.help = undefined
+        })
+
         const response = await fetch(`/api/quizzes/${this.id || this.name.toLowerCase() }`, {
           method: 'PUT',
           body: JSON.stringify({
             name: this.name,
             db: this.db,
-            questions: this.questions.map(({question, answer}) => ({question, answer}))
+            questions: this.questions.map(({question, answer, help}) => ({question, answer, help}))
           })
         })
 
@@ -146,7 +154,8 @@ export default {
     addQuestion() {
       this.questions.push({
         answer: '',
-        question: ''
+        question: '',
+        help: undefined
       })
     },
     removeQuestion(i) {

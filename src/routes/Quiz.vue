@@ -48,7 +48,10 @@
           <v-btn outline round @click="skipQuestion" :disabled="loading">
             Frage überspringen
           </v-btn>
-          <v-btn outline round @click="showAnswer" :disabled="loading">
+          <v-btn outline round @click="showHint" :disabled="loading" v-if="!hintUsed && quiz.questions[this.questionIndex].help">
+            Hinweis anzeigen
+          </v-btn>
+          <v-btn outline round @click="showAnswer" :disabled="loading" v-else>
             Lösung anzeigen
           </v-btn>
           <v-btn round color="primary" @click="run" :disabled="loading || !statement">
@@ -66,6 +69,13 @@
           :rows="rows"
           v-model="statement"
         />
+      </v-flex>
+
+      <v-flex xs12 v-if="hintUsed">
+        <p id="hint" class="hint-text">
+          Hinweis <br>
+          {{ hint }}
+        </p>
       </v-flex>
 
       <v-flex xs12 v-if="error">
@@ -95,6 +105,7 @@
       <h2>Gut gemacht!<br>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h2>
       <h3>Benötigte Zeit: {{ msToTime(endTime - startTime) }}</h3>
       <h3>Fragen richtig beantwortet: {{solvedQuestions}} von {{ questionIndex + 1 }}</h3>
+      <h3>Hinweise benutzt: {{usedHints}}</h3>
       <v-btn class="mt-4" :to="{name: 'Main'}" color="primary" round>Zurück zum Menü</v-btn>
     </v-container>
   </v-container>
@@ -129,7 +140,10 @@ export default {
       quizFinished: false,
       startTime: Date.now(),
       endTime: null,
+      answerUsed: false,
       hintUsed: false,
+      usedHints: 0,
+      hint: undefined,
       error: null,
       result: null,
       correct: false
@@ -190,19 +204,30 @@ export default {
       this.loading = false
     },
 
-    showAnswer() {
+    showHint() {
       this.hintUsed = true
+      this.hint = this.quiz.questions[this.questionIndex].help
+    },
+
+    showAnswer() {
+      this.answerUsed = true
       this.statement = this.quiz.questions[this.questionIndex].answer
     },
 
     skipQuestion() {
-      this.hintUsed = true
+      this.answerUsed = true
       this.nextQuestion()
     },
 
     nextQuestion() {
-      if (!this.hintUsed) this.solvedQuestions++
-      else this.hintUsed = false
+      if (!this.answerUsed) this.solvedQuestions++
+      else this.answerUsed = false
+
+      if (this.hintUsed) {
+        this.usedHints++;
+        this.hintUsed = false;
+      }
+
       if (this.questionIndex < this.quiz.questions.length - 1) {
         this.questionIndex++
         this.statement = ''
@@ -240,6 +265,18 @@ export default {
     color: black;
     font-weight: bold;
     font-size: 19px;
+  }
+
+  .hint-text {
+    font-size: 17px !important;
+    color: green;
+    margin: 20px;
+    text-align: center;
+  }
+
+  #hint {
+    font-size: 19px !important;
+    font-weight: bold;
   }
 
   #error {
