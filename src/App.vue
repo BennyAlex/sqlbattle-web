@@ -30,6 +30,10 @@ export default {
     overflow-y: auto;
   }
 
+  #app {
+    background: #eeeeee
+  }
+
   p {
     font-size: 15px;
   }

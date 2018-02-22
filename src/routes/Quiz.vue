@@ -1,6 +1,5 @@
 <template>
   <v-container fluid id="game" v-if="quiz">
-    
     <v-snackbar
       auto-height
       bottom
@@ -43,12 +42,12 @@
       </v-flex>
 
       <v-flex xs12 md10 lg8 offset-md1 offset-lg2>
+        <!-- TODO: get event listener working -->
         <v-text-field
           label="SQL Statement"
           textarea
           :rows="rows"
           v-model="statement"
-          @keydown.ctrl.enter="onKeydown"
         />
       </v-flex>
 
@@ -140,10 +139,12 @@ export default {
     }
     this.quiz = await response.json()
     document.addEventListener('keydown', this.onKeydown)
+    document.querySelector('#statement').addEventListener('keydown', this.onKeydown)
   },
 
   beforeDestroy() {
     document.removeEventListener('keydown', this.onKeydown)
+    document.querySelector('#statement').removeEventListener('keydown', this.onKeydown)
   },
 
   computed: {
