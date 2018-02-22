@@ -68,6 +68,7 @@
           textarea
           :rows="rows"
           v-model="statement"
+          @keydown.ctrl.enter="onKeydown"
         />
       </v-flex>
 
@@ -146,7 +147,9 @@ export default {
       hint: undefined,
       error: null,
       result: null,
-      correct: false
+      correct: false,
+      wrong: false,
+      skipped: false
     }
   },
 
@@ -201,6 +204,7 @@ export default {
       this.error = result.error ? result.error : response.ok ? null : response.statusText
       this.result = result.result
       this.correct = result.correct
+      this.wrong = !result.correct
       this.loading = false
     },
 
@@ -212,6 +216,8 @@ export default {
     showAnswer() {
       this.answerUsed = true
       this.statement = this.quiz.questions[this.questionIndex].answer
+      this.skipped = true
+      this.run()
     },
 
     skipQuestion() {
@@ -231,10 +237,14 @@ export default {
       if (this.questionIndex < this.quiz.questions.length - 1) {
         this.questionIndex++
         this.statement = ''
+
       } else {
         this.quizFinished = true
         this.endTime = Date.now()
       }
+      this.hintUsed = false
+      this.skipped = false
+      this.wrong = false
       this.correct = false
       this.result = null
     },
