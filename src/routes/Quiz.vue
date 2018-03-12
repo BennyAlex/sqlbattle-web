@@ -48,6 +48,7 @@
           textarea
           :rows="rows"
           v-model="statement"
+          @keyup.enter="onKeydown"
         />
       </v-flex>
 
