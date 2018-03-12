@@ -4,6 +4,7 @@ import Main from '@/routes/Main'
 import Quiz from '@/routes/Quiz'
 import Config from '@/routes/Config'
 import PageNotFound from '@/routes/PageNotFound'
+import Login from '@/routes/Login'
 
 Vue.use(Router)
 
@@ -21,9 +22,18 @@ export default new Router({
       component: Quiz
     },
     {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
       path: '/config',
       name: 'Config',
-      component: Config
+      component: Config,
+      beforeEnter: (to, from, next) => {
+        const pw = global.configToken
+        next()
+      }
     },
     {
       path: '*',
