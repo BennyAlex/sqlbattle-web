@@ -21,7 +21,7 @@ export default {
 
 <style>
 body {
-    font: normal 16px/26px Arial, sans-serif;
+    font: normal 16px/26px;
     background: #fafafa;
     color: #2a3744;
 }
@@ -36,7 +36,6 @@ body {
 }
 
 .error-page__title {
-    font-family: "Roboto", Arial, sans-serif;
     font-size: 31px;
 }
 </style>
