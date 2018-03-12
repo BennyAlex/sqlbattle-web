@@ -24,6 +24,7 @@
     </v-flex>
   </v-layout>
 </template>
+
 <script>
 export default {
   name: 'QuizList',
@@ -33,7 +34,6 @@ export default {
       required: true
     }
   },
-  mounted () {},
   methods: {
     getBackground() {
       const angle = Math.round(Math.random() * 360)
@@ -42,5 +42,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-</style>

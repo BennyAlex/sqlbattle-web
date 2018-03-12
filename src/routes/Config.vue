@@ -114,7 +114,7 @@ export default {
   data() {
     return {
       loading: true,
-      error: null,
+      error: undefined,
       databases: [],
       quizzes: []
     }

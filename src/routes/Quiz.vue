@@ -131,7 +131,7 @@ export default {
     }
   },
 
-  async mounted() {
+  async mounted () {
     const response = await fetch(`/api/quizzes/${this.quizID}`)
     if (!response.ok) {
       alert(response.statusText)
@@ -139,12 +139,10 @@ export default {
     }
     this.quiz = await response.json()
     document.addEventListener('keydown', this.onKeydown)
-    document.querySelector('#statement').addEventListener('keydown', this.onKeydown)
   },
 
   beforeDestroy() {
     document.removeEventListener('keydown', this.onKeydown)
-    document.querySelector('#statement').removeEventListener('keydown', this.onKeydown)
   },
 
   computed: {
