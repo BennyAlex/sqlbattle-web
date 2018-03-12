@@ -138,6 +138,7 @@ export default {
 
         const response = await fetch(`/api/quizzes/${this.id || this.name.toLowerCase() }`, {
           method: 'PUT',
+          headers: {'x-config-token': global.configToken},
           body: JSON.stringify({
             name: this.name,
             db: this.db,

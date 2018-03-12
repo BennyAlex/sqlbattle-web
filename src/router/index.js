@@ -30,9 +30,24 @@ export default new Router({
       path: '/config',
       name: 'Config',
       component: Config,
-      beforeEnter: (to, from, next) => {
-        const pw = global.configToken
-        next()
+      async beforeEnter(to, from, next) {
+        const response = await fetch('/api/check-token', {
+          method: 'POST',
+          headers: {
+            'x-config-token': global.configToken
+          }
+        })
+        if (response.ok) {
+          next()
+        }
+        else if (response.status === 401) {
+          // TODO: SHOW Error
+          next({path: '/login'})
+        }
+        else {
+          alert('Unbekannter Fehler')
+          next(false)
+        }
       }
     },
     {

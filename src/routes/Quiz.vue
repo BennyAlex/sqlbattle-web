@@ -234,7 +234,7 @@ export default {
     },
 
     onKeydown(e) {
-      if (!e.ctrlKey && !e.metaKey) {
+      if (!(e.ctrlKey || e.metaKey)) {
         return
       }
       if (e.key.toLowerCase() === 'enter') {

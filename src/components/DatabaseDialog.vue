@@ -107,6 +107,7 @@ export default {
         this.isSaving = true
         const response = await fetch(`/api/databases/${this.id}`, {
           method: 'PUT',
+          headers: {'x-config-token': global.configToken},
           body: JSON.stringify({sql: this.sql})
         })
         const result = await response.json()

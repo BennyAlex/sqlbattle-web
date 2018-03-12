@@ -163,11 +163,16 @@ export default {
     font-size: 18px;
   }
 
-  #config li {
+  #config .list__tile {
+    padding: 0;
+  }
+
+  #config .list-tile {
+    padding: 0 10px;
     border-top: 1px solid #b9b9b9;
   }
 
-  #config li:last-child {
+  #config .list-tile:last-child {
     border-bottom: 1px solid #b9b9b9;
   }
 
