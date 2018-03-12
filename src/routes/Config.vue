@@ -163,11 +163,11 @@ export default {
     font-size: 18px;
   }
 
-  #config .list-tile {
-    padding: 0 12px !important;
+  #config li {
+    border-top: 1px solid #b9b9b9;
   }
 
-  #config li:not(:last-child) {
+  #config li:last-child {
     border-bottom: 1px solid #b9b9b9;
   }
 

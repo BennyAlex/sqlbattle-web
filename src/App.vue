@@ -1,7 +1,7 @@
 <template>
   <v-app light>
     <v-toolbar app fixed class="no-text-highlight main-bg">
-      <v-btn flat icon dark class="z-index-5" :to="{name: 'Main'}" v-show="$route.name === 'Quiz'">
+      <v-btn exact flat icon dark class="z-index-5" :to="{name: 'Main'}" v-show="$route.name === 'Quiz'">
         <v-icon>arrow_back</v-icon>
       </v-btn>
 
@@ -28,6 +28,10 @@ export default {
 <style>
   html {
     overflow-y: auto;
+  }
+
+  #app {
+    background: #eeeeee
   }
 
   p {

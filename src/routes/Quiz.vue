@@ -4,33 +4,12 @@
       auto-height
       bottom
       :timeout="0"
-      v-model="correct"
-      color="green accent-4"
+      v-model="snackbar.show"
+      :color="snackbar.color"
       class="snackbar"
+      v-if="snackbar"
     >
-      Gut gemacht! Auf zur nächsten Frage :)
-    </v-snackbar>
-
-    <v-snackbar
-      auto-height
-      bottom
-      :timeout="0"
-      v-model="wrong"
-      color="red accent-4"
-      class="snackbar"
-    >
-      Das war leider Falsch, versuchs nochmal :)
-    </v-snackbar>
-
-    <v-snackbar
-      auto-height
-      bottom
-      :timeout="0"
-      v-model="skipped"
-      color="yellow accent-4"
-      class="snackbar"
-    >
-      So sieht die Lösung aus, du kannst nun zur nächsten Frage.
+      {{ snackbar.text }}
     </v-snackbar>
 
     <v-layout row wrap align-center v-if="!quizFinished">
@@ -63,12 +42,12 @@
       </v-flex>
 
       <v-flex xs12 md10 lg8 offset-md1 offset-lg2>
+        <!-- TODO: get event listener working -->
         <v-text-field
           label="SQL Statement"
           textarea
           :rows="rows"
           v-model="statement"
-          @keydown.ctrl.enter="onKeydown"
         />
       </v-flex>
 
@@ -142,14 +121,13 @@ export default {
       startTime: Date.now(),
       endTime: null,
       answerUsed: false,
-      hintUsed: false,
       usedHints: 0,
       hint: undefined,
       error: null,
       result: null,
-      correct: false,
-      wrong: false,
-      skipped: false
+      hintUsed: false,
+      correct: null,
+      skipCorrectCounting: false
     }
   },
 
@@ -161,10 +139,12 @@ export default {
     }
     this.quiz = await response.json()
     document.addEventListener('keydown', this.onKeydown)
+    document.querySelector('#statement').addEventListener('keydown', this.onKeydown)
   },
 
   beforeDestroy() {
     document.removeEventListener('keydown', this.onKeydown)
+    document.querySelector('#statement').removeEventListener('keydown', this.onKeydown)
   },
 
   computed: {
@@ -180,6 +160,13 @@ export default {
           return 10
         case 'xl':
           return 11
+      }
+    },
+    snackbar () {
+      return {
+        show: this.answerUsed || this.correct || this.result,
+        color: this.answerUsed ? 'orange' : this.correct ? 'green accent-4' : 'red darken-1',
+        text: this.answerUsed ? 'Dies ist die Lösung, du kannst nun weiter zur nächsten Frage.' : this.correct ? 'Gut gemacht! Auf zur nächsten Frage :)' : 'Das war leider Falsch, versuchs nochmal :)'
       }
     }
   },
@@ -203,8 +190,7 @@ export default {
       const result = await response.json()
       this.error = result.error ? result.error : response.ok ? null : response.statusText
       this.result = result.result
-      this.correct = result.correct
-      this.wrong = !result.correct
+      this.correct = !!result.correct
       this.loading = false
     },
 
@@ -216,36 +202,34 @@ export default {
     showAnswer() {
       this.answerUsed = true
       this.statement = this.quiz.questions[this.questionIndex].answer
-      this.skipped = true
       this.run()
     },
 
     skipQuestion() {
-      this.answerUsed = true
+      this.skipCorrectCounting = true
       this.nextQuestion()
     },
 
     nextQuestion() {
-      if (!this.answerUsed) this.solvedQuestions++
-      else this.answerUsed = false
-
+      if (!this.skipCorrectCounting || !this.answerUsed) this.solvedQuestions++
+      
       if (this.hintUsed) {
-        this.usedHints++;
-        this.hintUsed = false;
+        this.usedHints++
+        this.hintUsed = false
       }
 
       if (this.questionIndex < this.quiz.questions.length - 1) {
         this.questionIndex++
-        this.statement = ''
-
       } else {
         this.quizFinished = true
         this.endTime = Date.now()
       }
+
+      this.skipCorrectCounting = false
+      this.answerUsed = false
+      this.statement = ''
       this.hintUsed = false
-      this.skipped = false
-      this.wrong = false
-      this.correct = false
+      this.correct = null
       this.result = null
     },
 
