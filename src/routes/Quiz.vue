@@ -48,6 +48,7 @@
           textarea
           :rows="rows"
           v-model="statement"
+          @keyup.enter="onKeydown"
         />
       </v-flex>
 
@@ -209,11 +210,12 @@ export default {
     },
 
     nextQuestion() {
-      if (!this.skipCorrectCounting || !this.answerUsed) this.solvedQuestions++
-      
+      if (!this.skipCorrectCounting && !this.answerUsed) {
+        this.solvedQuestions++
+      }
+
       if (this.hintUsed) {
         this.usedHints++
-        this.hintUsed = false
       }
 
       if (this.questionIndex < this.quiz.questions.length - 1) {
