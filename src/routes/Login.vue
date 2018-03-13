@@ -5,7 +5,7 @@
         <v-form ref="form">
           <v-card>
             <v-card-text class="px-4 pt-4 pb-3">
-              <v-text-field label="Passwort" v-model="password" required :rules="[(v) => !!v || 'Bitte das Passwort angeben']"/>
+              <v-text-field label="Passwort" v-model="password" required :rules="[(v) => !!v || 'Bitte das Passwort eingeben']" type="password" @keypress.enter="login"/>
             </v-card-text>
             <v-card-actions>
               <v-spacer/>      
@@ -22,7 +22,7 @@
 export default {
   name: 'Login',
   data: () => ({
-    password: undefined
+    password: undefined,
   }),
   mounted () {},
   methods: {
