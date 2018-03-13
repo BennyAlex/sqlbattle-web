@@ -22,7 +22,7 @@
 export default {
   name: 'Login',
   data: () => ({
-    password: undefined,
+    password: undefined
   }),
   mounted () {},
   methods: {
