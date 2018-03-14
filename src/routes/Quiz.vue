@@ -42,12 +42,9 @@
       </v-flex>
 
       <v-flex xs12 md10 lg8 offset-md1 offset-lg2>
-        <v-text-field
-          label="SQL Statement"
-          textarea
-          :rows="rows"
+        <codemirror
           v-model="statement"
-          @keyup.enter="onKeydown"
+          :options="codemirrorOptions"
         />
       </v-flex>
 
@@ -92,6 +89,11 @@
   <loading v-else/>
 </template>
 <script>
+import { codemirror } from 'vue-codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/base16-light.css'
+import 'codemirror/mode/sql/sql.js'
+
 import SqlTable from '@/components/SqlTable'
 import Loading from '@/components/Loading'
 
@@ -100,7 +102,8 @@ export default {
 
   components: {
     Loading,
-    SqlTable
+    SqlTable,
+    codemirror
   },
 
   props: {
@@ -127,7 +130,13 @@ export default {
       result: null,
       hintUsed: false,
       correct: null,
-      skipCorrectCounting: false
+      skipCorrectCounting: false,
+      codemirrorOptions: {
+        mode: 'text/x-mariadb',
+        theme: 'base16-light',
+        lineNumbers: true,
+        line: true,
+      }
     }
   },
 
