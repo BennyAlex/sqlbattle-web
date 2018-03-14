@@ -41,12 +41,13 @@ export default new Router({
           next()
         }
         else if (response.status === 401) {
-          // TODO: SHOW Error
+          // no token provided or it is invalid -> redirect to login page
           next({path: '/login'})
         }
         else {
-          alert('Unbekannter Fehler')
-          next(false)
+          // unknown error
+          alert('Folgender Fehler ist aufgetreten: ' + response.statusText)
+          next({path: '/'})
         }
       }
     },

@@ -42,7 +42,6 @@
       </v-flex>
 
       <v-flex xs12 md10 lg8 offset-md1 offset-lg2>
-        <!-- TODO: get event listener working -->
         <v-text-field
           label="SQL Statement"
           textarea
@@ -234,6 +233,7 @@ export default {
     },
 
     onKeydown(e) {
+      // check if ctrl (windows) or alt (macOS) is pressed
       if (!(e.ctrlKey || e.metaKey)) {
         return
       }
