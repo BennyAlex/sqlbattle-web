@@ -8,7 +8,7 @@
             <v-card-text id="card-text">
               <v-text-field label="Passwort" v-model="password" required :rules="[(v) => !!v || 'Bitte Passwort eingeben']" type="password" @keypress.enter="login"/>
             </v-card-text>
-            <p class="error-text" id="error" v-if="error">
+            <p class="error-text" v-if="error">
                 {{ error }}
               </p>
             <v-card-actions>

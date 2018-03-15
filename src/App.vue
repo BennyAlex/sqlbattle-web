@@ -8,8 +8,8 @@
         <v-icon>settings</v-icon>
       </v-btn>
 
-      <div class="app-title">
-        <router-link :to="{name: 'Main'}" class="color-inherit">SQL-Battle</router-link>
+      <div class="toolbar-title">
+        <router-link :to="{name: 'Main'}" style="color: #fff">SQL-Battle</router-link>
       </div>
     </v-toolbar>
 
@@ -52,7 +52,8 @@ export default {
   }
 
   .error-text {
-    font-size: 17px !important;
+    font-size: 18px !important;
+    font-weight: bold;
     color: red;
     margin: 20px;
     text-align: center;
@@ -64,8 +65,8 @@ export default {
     color: white !important;
   }
 
-  .app-title {
-    color: white;
+  .toolbar-title {
+    color: white !important;
     text-decoration: none;
     z-index: 0;
     letter-spacing: 2px;
@@ -86,10 +87,6 @@ export default {
     font-size: 0.9em
   }
 
-  .color-inherit {
-    color: inherit !important;
-  }
-
   .no-text-highlight, .input-group--select, .input-group--selections {
     -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none;
@@ -101,7 +98,7 @@ export default {
     cursor: default;
   }
 
-  .cursor-pointer, a, .btn, button, .btn__content, .app-title a {
+  .cursor-pointer, a, .btn, button, .btn__content, .toolbar-title a {
     cursor: pointer !important
   }
 
@@ -122,7 +119,7 @@ export default {
 
   @media only screen and (max-width: 599px) {
     #school {
-      font-size: 1.05em;
+      font-size: 1.075em;
     }
   }
 </style>

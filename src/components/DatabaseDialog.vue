@@ -7,7 +7,7 @@
           <v-icon>close</v-icon>
         </v-btn>
 
-        <div class="app-title">
+        <div class="toolbar-title">
           Datenbank {{ dbID ? 'bearbeiten' : 'anlegen'}}
         </div>
 

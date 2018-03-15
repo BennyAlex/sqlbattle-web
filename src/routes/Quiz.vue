@@ -50,14 +50,14 @@
       </v-flex>
 
       <v-flex xs12 v-if="hintUsed">
-        <p id="hint" class="hint-text">
+        <p id="hint" class="error-text">
           Hinweis <br>
           {{ hint }}
         </p>
       </v-flex>
 
       <v-flex xs12 v-if="error">
-        <p id="error" class="error-text">
+        <p class="error-text">
           Das war leider falsch! <br>
           Grund: {{ error }}
         </p>
@@ -271,26 +271,13 @@ export default {
     font-size: 19px;
   }
 
-  .hint-text {
-    font-size: 17px !important;
-    color: green;
-    margin: 20px;
-    text-align: center;
+  #hint {
+    color: #047404 !important;
   }
 
   #statement {
     border: 1px solid #222;
     margin: 13px 16px 16px;
-  }
-
-  #hint {
-    font-size: 19px !important;
-    font-weight: bold;
-  }
-
-  #error {
-    font-size: 19px !important;
-    font-weight: bold;
   }
 
   #game {
