@@ -24,13 +24,13 @@
           Nächste Frage!
         </v-btn>
         <template v-else>
-          <v-btn outline round @click="skipQuestion" :disabled="loading">
+          <v-btn round color="orange darken-1" @click="skipQuestion" :disabled="loading">
             Frage überspringen
           </v-btn>
-          <v-btn outline round @click="showHint" :disabled="loading" v-if="!hintUsed && quiz.questions[this.questionIndex].help">
+          <v-btn round color="yellow darken-1" @click="showHint" :disabled="loading" v-if="!hintUsed && quiz.questions[this.questionIndex].help">
             Hinweis anzeigen
           </v-btn>
-          <v-btn outline round @click="showAnswer" :disabled="loading" v-else>
+          <v-btn round color="yellow darken-1" @click="showAnswer" :disabled="loading" v-else>
             Lösung anzeigen
           </v-btn>
           <v-btn round color="primary" @click="run" :disabled="loading || !statement">
@@ -43,6 +43,7 @@
 
       <v-flex xs12 md10 lg8 offset-md1 offset-lg2>
         <codemirror
+          id="statement"
           v-model="statement"
           :options="codemirrorOptions"
         />
@@ -275,6 +276,11 @@ export default {
     color: green;
     margin: 20px;
     text-align: center;
+  }
+
+  #statement {
+    border: 1px solid #222;
+    margin: 13px 16px 16px;
   }
 
   #hint {
