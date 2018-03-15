@@ -7,7 +7,7 @@
           <v-icon>close</v-icon>
         </v-btn>
 
-        <div class="toolbar-title">
+        <div class="toolbar-title" v-if="$vuetify.breakpoint.smAndUp">
           Quiz {{quizID ? 'bearbeiten' : 'anlegen'}}
         </div>
 
@@ -20,6 +20,9 @@
       </v-toolbar>
       <v-content>
         <v-container>
+          <h1 v-if="$vuetify.breakpoint.xsOnly">
+            Quiz {{quizID ? 'bearbeiten' : 'anlegen'}}
+          </h1>
           <v-form ref="form">
             <p class="error-text" v-if="error">
               Es ist ein Fehler aufgetreten: <br>

@@ -48,16 +48,19 @@ export default {
       default: null
     }
   },
+
   data() {
     return {
       dialog: false,
       error: null
     }
   },
+  
   methods: {
     async deleteItem() {
       const response = await fetch(`/api/${this.type}/${this.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {'x-config-token': global.configToken}
       })
 
       if (!response.ok) {
@@ -72,6 +75,7 @@ export default {
         this.close()
       }
     },
+
     close() {
       this.error = null
       this.dialog = false
