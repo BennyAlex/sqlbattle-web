@@ -103,4 +103,9 @@ export default {
     text-align: center;
     flex-wrap: wrap;
   }
+
+  nav, footer {
+    /* fix for codemirror */
+    z-index: 100 !important;
+  }
 </style>
