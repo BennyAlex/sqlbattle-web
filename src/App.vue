@@ -17,10 +17,15 @@
       <router-view/>
     </v-content>
 
-    <v-footer app class="main-bg">
-      <div class="ml-3" style="font-size: 1.15em; font-weight: bold">&copy; 2017 - {{ new Date().getFullYear() }} Klara-Oppenheimer-Schule</div>
-      <v-spacer/>
-      <div class="mr-3">Created by Julian L., Maxi R. & Benny F.</div>
+    <v-footer app class="main-bg pa-2" height="auto">
+      <v-layout row wrap align-center>
+        <v-flex xs12 sm6>
+          <div class="text-xs-center text-sm-left" id="school">&copy; 2017 - {{ new Date().getFullYear() }} Klara-Oppenheimer-Schule</div>
+        </v-flex>
+        <v-flex xs12 sm6>
+          <div class="text-xs-center text-sm-right" id="creators">Created by Julian L., Maxi R. & Benny F.</div>
+        </v-flex>
+      </v-layout>  
     </v-footer>
   </v-app>
 </template>
@@ -72,6 +77,15 @@ export default {
     position: fixed;
   }
 
+  #school {
+    font-weight: bold;
+    font-size: 1.125em;
+  }
+
+  #creators {
+    font-size: 0.9em
+  }
+
   .color-inherit {
     color: inherit !important;
   }
@@ -109,5 +123,11 @@ export default {
   nav, footer {
     /* fix for codemirror */
     z-index: 100 !important;
+  }
+
+  @media only screen and (max-width: 599px) {
+    #school {
+      font-size: 1.05em;
+    }
   }
 </style>
