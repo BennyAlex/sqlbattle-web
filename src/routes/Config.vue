@@ -147,36 +147,31 @@ export default {
 }
 </script>
 
-<style>
-  #config .card-title {
+<style scoped>
+  .card-title {
     padding-bottom: 0;
     padding-top: 10px;
     margin: 0;
   }
 
-  #config .card-text {
+  .card-text {
     margin: 0;
     padding: 0 28px;
   }
 
-  #config .list-title {
+  .list-title {
     font-size: 18px;
   }
 
-  #config .list__tile {
-    padding: 0;
-  }
-
-  #config .list-tile {
-    padding: 0 10px;
+  .list-tile {
     border-top: 1px solid #b9b9b9;
   }
 
-  #config .list-tile:last-child {
+  .list-tile:last-child {
     border-bottom: 1px solid #b9b9b9;
   }
 
-  #config .add-btn {
+  .add-btn {
     padding-top: 4px;
     padding-bottom: 7px;
     text-align: center;
