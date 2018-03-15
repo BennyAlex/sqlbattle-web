@@ -24,7 +24,7 @@
             Quiz {{quizID ? 'bearbeiten' : 'anlegen'}}
           </h1>
           <v-form ref="form">
-            <p class="error-text" v-if="error">
+            <p class="error-text mt-2" v-if="error">
               Es ist ein Fehler aufgetreten: <br>
               <b>{{ error }}</b>
             </p>
@@ -63,9 +63,9 @@
                 </v-layout>
 
                 <div class="px-3">
-                  <v-text-field label="Frage" v-model="q.question" required :rules="required"/>
-                  <v-text-field label="Mögliche Antwort" v-model="q.answer" required :rules="required"/>
-                  <v-text-field label="Hinweis" v-model="q.help"/>
+                  <v-text-field label="Frage" v-model.trim="q.question" required :rules="required"/>
+                  <v-text-field label="Mögliche Antwort (SQL)" v-model="q.answer" required :rules="required"/>
+                  <v-text-field label="Hinweis" v-model.trim="q.help"/>
                 </div>
               </div>
 
@@ -74,7 +74,7 @@
               </div>
             </div>
 
-            <p class="error-text" v-if="error">
+            <p class="error-text mt-2" v-if="error">
               Es ist ein Fehler aufgetreten: <br>
               <b>{{ error }}</b>
             </p>
@@ -134,9 +134,8 @@ export default {
       if (this.$refs.form.validate()) {
         this.isSaving = true
 
-        this.questions.forEach(function(q) {
-          if(q.help === '')
-            q.help = undefined
+        this.questions.forEach(q => {
+          if(q.help === '') q.help = undefined
         })
 
         const response = await fetch(`/api/quizzes/${this.id || this.name.toLowerCase() }`, {

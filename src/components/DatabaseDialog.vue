@@ -24,7 +24,7 @@
             Datenbank {{ dbID ? 'bearbeiten' : 'anlegen'}}
           </h1>
           <v-form ref="form">
-            <p class="error-text" v-if="error">
+            <p class="error-text mt-2" v-if="error">
               Es ist ein Fehler aufgetreten: <br>
               <b>{{ error }}</b>
             </p>
@@ -34,7 +34,7 @@
 
             <v-text-field textarea label="SQL-Statement" v-model="sql" required :rules="required" :rows="rows"/>
 
-            <p class="error-text" v-if="error">
+            <p class="error-text mt-2" v-if="error">
               Es ist ein Fehler aufgetreten: <br>
               <b>{{ error }}</b>
             </p>

@@ -20,7 +20,7 @@
         <h2>{{ quiz.questions[questionIndex].question }}</h2>
       </v-flex>
 
-      <v-flex xs12 lg5 class="text-xs-center text-lg-right">
+      <v-flex xs12 lg5 class="text-xs-center text-lg-right my-2">
         <v-btn round color="primary" @click="nextQuestion" v-if="correct">
           Nächste Frage!
         </v-btn>
@@ -41,23 +41,25 @@
         </template>
       </v-flex>
 
-      <v-flex xs12 md10 lg8 offset-md1 offset-lg2>
+      <v-flex class="mt-3" xs12 md10 lg8 offset-md1 offset-lg2>
+        <h4>SQL-Statement:</h4>
         <codemirror
           id="statement"
           v-model="statement"
+          class="mb-2"
           :options="codemirrorOptions"
         />
       </v-flex>
 
       <v-flex xs12 v-if="hintUsed">
-        <p id="hint" class="error-text">
+        <p id="hint" class="error-text mt-2 mb-0">
           Hinweis: <br>
           {{ hint }}
         </p>
       </v-flex>
 
       <v-flex xs12 v-if="error">
-        <p class="error-text">
+        <p class="error-text mt-2 mb-0">
           Das war leider falsch! <br>
           Grund: {{ error }}
         </p>
@@ -67,7 +69,7 @@
         <loading text="SQL-Abfrage wird verarbeitet, bitte warten..."/>
       </v-flex>
 
-      <v-flex xs12 lxl6 v-else-if="result">
+      <v-flex xs12 v-else-if="result" class="mt-3">
         <sql-table :fields="result.fields" :rows="result.rows"/>
       </v-flex>
 
@@ -80,11 +82,17 @@
 
     <!-- TODO: besser machen! -->
     <v-container class="text-xs-center" v-else>
-      <h2>Gut gemacht!<br>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h2>
+      <h2>Du hast "{{ quiz.name }}" erfolgreich abgeschlossen!</h2>
+      <br>
+      <h2>Du hast <i>{{ Math.round(solvedQuestions / quiz.questions.length * 100) }}%</i> der Fragen richtig beantwortet.
+        <br>
+        Dies entspricht der IHK Note <u>{{ getGrade() }}</u>
+      </h2>
+      <br>
       <h3>Benötigte Zeit: {{ msToTime(endTime - startTime) }}</h3>
       <h3>Fragen richtig beantwortet: {{solvedQuestions}} von {{ questionIndex + 1 }}</h3>
       <h3>Hinweise benutzt: {{usedHints}}</h3>
-      <v-btn class="mt-4" :to="{name: 'Main'}" color="primary" round>Zurück zum Menü</v-btn>
+      <v-btn class="mt-4 mb-3" :to="{name: 'Main'}" color="primary" round>Zurück zum Menü</v-btn>
     </v-container>
   </v-container>
   <loading v-else/>
@@ -116,21 +124,21 @@ export default {
 
   data() {
     return {
-      quiz: null,
+      quiz: undefined,
       solvedQuestions: 0,
       questionIndex: 0,
       statement: '',
       loading: false,
       quizFinished: false,
       startTime: Date.now(),
-      endTime: null,
+      endTime: undefined,
       answerUsed: false,
       usedHints: 0,
       hint: undefined,
-      error: null,
-      result: null,
+      error: undefined,
+      result: undefined,
       hintUsed: false,
-      correct: null,
+      correct: undefined,
       skipCorrectCounting: false,
       showSnackbar: false,
       codemirrorOptions: {
@@ -184,7 +192,7 @@ export default {
       if (this.loading) return
 
       this.loading = true
-      this.error = null
+      this.error = undefined
 
       const response = await fetch('/api/query', {
         method: 'POST',
@@ -196,11 +204,22 @@ export default {
       })
 
       const result = await response.json()
-      this.error = result.error ? result.error : response.ok ? null : response.statusText
+      this.error = result.error ? result.error : response.ok ? undefined : response.statusText
       this.result = result.result
       this.correct = !!result.correct
       this.showSnackbar = true
       this.loading = false
+    },
+
+    getGrade() {
+      // get the IHK grade
+      const percentage = Math.round(this.solvedQuestions / this.quiz.questions.length * 100)
+      if (percentage >= 92) return 1
+      if (percentage >= 81) return 2
+      if (percentage >= 67) return 3
+      if (percentage >= 50) return 4
+      if (percentage >= 30) return 5
+      else return 6
     },
 
     showHint() {
@@ -241,8 +260,8 @@ export default {
       this.answerUsed = false
       this.statement = ''
       this.hintUsed = false
-      this.correct = null
-      this.result = null
+      this.correct = undefined
+      this.result = undefined
     },
 
     onKeydown(e) {
@@ -280,7 +299,6 @@ export default {
 
   #statement {
     border: 1px solid #222;
-    margin: 13px 16px 16px;
   }
 
   #game {

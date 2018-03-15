@@ -17,7 +17,7 @@
       <router-view/>
     </v-content>
 
-    <v-footer app class="main-bg pa-2" height="auto">
+    <v-footer app class="main-bg px-3 py-2" height="auto">
       <v-layout row wrap align-center>
         <v-flex xs12 sm6>
           <div class="text-xs-center text-sm-left" id="school">&copy; 2017 - {{ new Date().getFullYear() }} Klara-Oppenheimer-Schule</div>
@@ -55,7 +55,6 @@ export default {
     font-size: 18px !important;
     font-weight: bold;
     color: red;
-    margin: 20px;
     text-align: center;
   }
 
