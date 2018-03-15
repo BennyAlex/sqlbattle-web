@@ -18,8 +18,9 @@
     </v-content>
 
     <v-footer app class="main-bg">
+      <div class="ml-3" style="font-size: 1.15em; font-weight: bold">&copy; 2017 - {{ new Date().getFullYear() }} Klara-Oppenheimer-Schule</div>
       <v-spacer/>
-      <div class="mr-3">&copy; 2017 - {{ new Date().getFullYear() }} by Julian, Maxi & Benny</div>
+      <div class="mr-3">Created by Julian L., Maxi R. & Benny F.</div>
     </v-footer>
   </v-app>
 </template>
@@ -65,6 +66,7 @@ export default {
     letter-spacing: 2px;
     font-weight: 500;
     font-size: 22px;
+    font-weight: 900;
     width: 100% !important;
     text-align: center;
     position: fixed;
