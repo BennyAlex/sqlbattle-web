@@ -4,12 +4,13 @@
       auto-height
       bottom
       :timeout="0"
-      v-model="snackbar.show"
+      v-model="showSnackbar"
       :color="snackbar.color"
-      class="snackbar"
+      id="snackbar"
       v-if="snackbar"
     >
       {{ snackbar.text }}
+      <v-btn icon @click="showSnackbar = false"><v-icon large color="black">close</v-icon></v-btn>
     </v-snackbar>
 
     <v-layout row wrap align-center v-if="!quizFinished">
@@ -38,7 +39,6 @@
             <v-icon>play_arrow</v-icon>
           </v-btn>
         </template>
-
       </v-flex>
 
       <v-flex xs12 md10 lg8 offset-md1 offset-lg2>
@@ -51,7 +51,7 @@
 
       <v-flex xs12 v-if="hintUsed">
         <p id="hint" class="error-text">
-          Hinweis <br>
+          Hinweis: <br>
           {{ hint }}
         </p>
       </v-flex>
@@ -72,7 +72,7 @@
       </v-flex>
 
       <div id="next-btn" v-if="correct">
-        <v-btn round color="primary" class="mt-5" @click="nextQuestion()">
+        <v-btn round color="primary" @click="nextQuestion()">
           Nächste Frage!
         </v-btn>
       </div>
@@ -132,6 +132,7 @@ export default {
       hintUsed: false,
       correct: null,
       skipCorrectCounting: false,
+      showSnackbar: false,
       codemirrorOptions: {
         mode: 'text/x-mariadb',
         theme: 'base16-light',
@@ -172,7 +173,6 @@ export default {
     },
     snackbar () {
       return {
-        show: this.answerUsed || this.correct || this.result,
         color: this.answerUsed ? 'orange' : this.correct ? 'green accent-4' : 'red darken-1',
         text: this.answerUsed ? 'Dies ist die Lösung, du kannst nun weiter zur nächsten Frage.' : this.correct ? 'Gut gemacht! Auf zur nächsten Frage :)' : 'Das war leider Falsch, versuchs nochmal :)'
       }
@@ -199,6 +199,7 @@ export default {
       this.error = result.error ? result.error : response.ok ? null : response.statusText
       this.result = result.result
       this.correct = !!result.correct
+      this.showSnackbar = true
       this.loading = false
     },
 
@@ -219,6 +220,8 @@ export default {
     },
 
     nextQuestion() {
+      this.showSnackbar = false
+
       if (!this.skipCorrectCounting && !this.answerUsed) {
         this.solvedQuestions++
       }
@@ -265,10 +268,10 @@ export default {
 </script>
 
 <style scoped>
-  .snackbar {
+  #snackbar {
     color: black;
     font-weight: bold;
-    font-size: 19px;
+    font-size: 17px;
   }
 
   #hint {
@@ -287,7 +290,7 @@ export default {
   #next-btn {
     width: 100%;
     text-align: center;
-    margin-bottom: 62px;
+    margin: 30px 0 26px;
   }
 
   @media only screen and (min-width: 600px) {
@@ -295,15 +298,9 @@ export default {
       padding: 20px 26px;
     }
 
-    .snackbar {
-      font-size: 20px;
+    #snackbar {
+      font-size: 18px;
       margin-bottom: 60px;
-    }
-
-    #next-btn {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 98px;
     }
   }
 
@@ -312,8 +309,8 @@ export default {
       padding: 22px 40px;
     }
 
-    .snackbar {
-      font-size: 21px;
+    #snackbar {
+      font-size: 19px;
     }
   }
 
