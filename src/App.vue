@@ -117,6 +117,11 @@ export default {
     flex-wrap: wrap;
   }
 
+  nav, footer {
+    /* fix for codemirror */
+    z-index: 100 !important;
+  }
+
   @media only screen and (max-width: 599px) {
     #school {
       font-size: 1.075em;
