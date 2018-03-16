@@ -3,11 +3,11 @@
     <slot slot="activator"/>
     <v-card>
       <v-toolbar fixed class="main-bg no-text-highlight">
-        <v-btn dark icon class="z-index-5" @click="close()" :disabled="isSaving">
+        <v-btn dark icon class="z-index-5" @click="cancel()" :disabled="isSaving">
           <v-icon>close</v-icon>
         </v-btn>
 
-        <div class="toolbar-title" v-if="$vuetify.breakpoint.smAndUp">
+        <div class="toolbar-title hidden-xs-only">
           Quiz {{quizID ? 'bearbeiten' : 'anlegen'}}
         </div>
 
@@ -20,7 +20,7 @@
       </v-toolbar>
       <v-content>
         <v-container>
-          <h1 v-if="$vuetify.breakpoint.xsOnly">
+          <h1 class="mb-2 hidden-sm-and-up">
             Quiz {{quizID ? 'bearbeiten' : 'anlegen'}}
           </h1>
           <v-form ref="form">
@@ -29,11 +29,11 @@
               <b>{{ error }}</b>
             </p>
 
-            <v-text-field label="Name" v-model="name" required :rules="required"/>
+            <v-text-field label="Name" v-model="quiz.name" required :rules="required"/>
 
             <v-select
               :items="databases"
-              v-model="db"
+              v-model="quiz.db"
               label="Datenbank"
               item-text="id"
               item-value="id"
@@ -46,20 +46,53 @@
 
             <div class="px-3">
               <!-- TODO: Add Cards -->
-              <div v-for="(q, i) in questions" :key="i">
+              <div v-for="(q, i) in quiz.questions" :key="i">
                 <v-layout align-center row wrap class="ma-0 pa-0 mt-3">
                   <h3>Frage #{{ i + 1 }}:</h3>
                   <v-spacer/>
+
+                  <v-tooltip top v-if="i !== 0">
                   <v-btn
+                    flat
+                    icon
                     small
-                    round
-                    outline
                     color="primary"
-                    v-if="questions.length > 1"
-                    @click="removeQuestion(i)"
+                    slot="activator"
+                    @click="moveUp(q, i)"
                   >
-                    Frage löschen
-                  </v-btn>
+                    <v-icon>arrow_upward</v-icon>
+                    </v-btn>
+                    <span>Nach oben verschieben</span>
+                  </v-tooltip>
+
+                  <v-tooltip bottom v-if="i !== quiz.questions.length - 1">
+                    <v-btn
+                      flat
+                      icon
+                      small
+                      color="primary"
+                      slot="activator"
+                      @click="moveDown(q, i)"
+                    >
+                      <v-icon>arrow_downward</v-icon>
+                    </v-btn>
+                    <span>Nach unten verschieben</span>
+                  </v-tooltip>
+
+                  <v-tooltip left>
+                    <v-btn
+                      flat
+                      icon
+                      small
+                      color="primary"
+                      slot="activator"
+                      v-if="quiz.questions.length > 1"
+                      @click="removeQuestion(i)"
+                    >
+                      <v-icon>delete_forever</v-icon>
+                    </v-btn>
+                    <span>Frage löschen</span>
+                  </v-tooltip>
                 </v-layout>
 
                 <div class="px-3">
@@ -90,85 +123,132 @@ export default {
   props: {
     quizID: {
       type: [Number, String],
-      default: null
+      default: undefined
     },
     databases: {
       type: Array,
       required: true
     }
   },
+
   data() {
     return {
       dialog: false,
-      error: null,
-      id: null,
-      name: '',
-      db: '',
+      error: undefined,
       isSaving: false,
-      questions: [{
-        question: '',
-        answer: '',
-        help: undefined
-      }],
+      quiz: {
+        id: undefined,
+        db: '',
+        name: '',
+        questions: [{
+          question: '',
+          answer: '',
+          help: undefined
+        }]
+      },
       required: [
         v => !!v || 'Dies ist ein Pflichtfeld'
       ]
     }
   },
+
   async mounted() {
-    if (this.quizID) {
-      const response = await fetch(`/api/quizzes/${this.quizID}`)
-      if (!response.ok) {
-        alert(response.statusText)
-        return
-      }
-      const quiz = await response.json()
-      this.id = quiz.id
-      this.name = quiz.name
-      this.questions = quiz.questions
-      this.db = quiz.db
-    }
+    await this.loadQuiz()
   },
+
   methods: {
+    async loadQuiz() {
+      if (this.quizID) {
+        const response = await fetch(`/api/quizzes/${this.quizID}`)
+        if (!response.ok) {
+          alert(response.statusText)
+          return
+        }
+        this.quiz = await response.json()
+      }
+    },
+
     async save() {
-      if (this.$refs.form.validate()) {
+      const valid = await this.$refs.form.validate()
+      if (valid) {
         this.isSaving = true
 
-        this.questions.forEach(q => {
+        this.quiz.questions.forEach(q => {
           if(q.help === '') q.help = undefined
         })
 
-        const response = await fetch(`/api/quizzes/${this.id || this.name.toLowerCase() }`, {
+        const response = await fetch(`/api/quizzes/${this.quiz.id || this.quiz.name.toLowerCase() }`, {
           method: 'PUT',
           headers: {'x-config-token': global.configToken},
           body: JSON.stringify({
-            name: this.name,
-            db: this.db,
-            questions: this.questions.map(({question, answer, help}) => ({question, answer, help}))
+            name: this.quiz.name,
+            db: this.quiz.db,
+            questions: this.quiz.questions.map(({question, answer, help}) => ({question, answer, help}))
           })
         })
 
         const result = await response.json()
-        this.error = result.error ? result.error : response.ok ? null : response.statusText
+        this.error = result.error ? result.error : response.ok ? undefined : response.statusText
         this.isSaving = false
         if (!this.error) this.close()
       }
     },
+
+    moveUp(question, index) {
+      const questions = this.quiz.questions
+      this.quiz.questions = undefined
+      const upperQuestion = questions[index - 1]
+      questions[index - 1] = question
+      questions[index] = upperQuestion
+      this.$nextTick(() => {
+        this.quiz.questions = questions
+      })
+    },
+
+    moveDown(question, index) {
+      const questions = this.quiz.questions
+      this.quiz.questions = undefined
+      const downerQuestion = questions[index + 1]
+      questions[index + 1] = question
+      questions[index] = downerQuestion
+      this.$nextTick(() => {
+        this.quiz.questions = questions
+      })
+    },
+
     addQuestion() {
-      this.questions.push({
+      this.quiz.questions.push({
         answer: '',
         question: '',
         help: undefined
       })
     },
+
     removeQuestion(i) {
-      this.questions.splice(i, 1)
+      this.quiz.questions.splice(i, 1)
     },
+
+    async cancel() {
+      // closes the dialog and reload the db
+      this.$refs.form.reset()
+      this.close()
+      this.quiz = {
+        id: undefined,
+        db: '',
+        name: '',
+        questions: [{
+          question: '',
+          answer: '',
+          help: undefined
+        }]
+      }
+      await this.loadQuiz()
+    },
+
     close() {
       this.$emit('refresh')
-      this.error = null
+      this.error = undefined
       this.dialog = false
-      if (!this.quizID) this.$refs.form.reset() // empty fields because the quiz wasn't saved
     }
   }
 }

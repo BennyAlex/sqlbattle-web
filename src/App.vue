@@ -1,7 +1,7 @@
 <template>
   <v-app light>
     <v-toolbar app fixed class="no-text-highlight main-bg">
-      <v-btn exact flat icon dark class="z-index-5" :to="{name: 'Main'}" v-show="$route.name === 'Quiz' || $route.name === 'Config' || $route.name === 'Login'">
+      <v-btn exact flat icon dark class="z-index-5" :to="{name: 'Main'}" v-show="$route.name === 'Quiz' || $route.name === 'Config' || $route.name === 'Login' || $route.name === 'PageNotFound'">
         <v-icon>arrow_back</v-icon>
       </v-btn>
       <v-btn exact flat icon dark class="z-index-5" :to="{name: 'Config'}" v-show="$route.name === 'Main'">

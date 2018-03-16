@@ -1,41 +1,26 @@
 <template>
-    <div class="error-page">
-        <header class="error-page__header">
-            <img class="error-page__header-image" src="https://static.tutsplus.com/assets/sad-computer-128aac0432b34e270a8d528fb9e3970b.gif" alt="Sad computer">
-            <h1 class="error-page__title nolinks">Page Not Found</h1>
-        </header>
-        <p class="error-page__message">The page you are looking for could not be found.</p>
-    </div>
+  <div id="error-page">
+    <img src="https://static.tutsplus.com/assets/sad-computer-128aac0432b34e270a8d528fb9e3970b.gif" alt="Sad computer">
+    <h1>Error 404: Page Not Found</h1>
+    <h2>The page you are looking for could not be found.</h2>
+  </div>
 </template>
 
 <script>
-
 export default {
-  data() {
-    return {
-
-    }
-  }
+  name: 'PageNotFound'
 }
 </script>
 
-<style>
-body {
+<style scoped>
+#error-page {
     font: normal 16px/26px;
-    background: #fafafa;
-    color: #2a3744;
-}
-
-.error-page {
-    margin: 100px 0 40px;
+    margin: 120px 16px 60px;
     text-align: center;
 }
 
-.error-page__header-image {
+img {
     width: 112px;
-}
-
-.error-page__title {
-    font-size: 31px;
+    margin-bottom: 28px
 }
 </style>

@@ -3,11 +3,11 @@
     <slot slot="activator"/>
     <v-card>
       <v-toolbar fixed class="main-bg no-text-highlight">
-        <v-btn dark class="z-index-5" icon @click="close()" :disabled="isSaving">
+        <v-btn dark class="z-index-5" icon @click="cancel()" :disabled="isSaving">
           <v-icon>close</v-icon>
         </v-btn>
 
-        <div class="toolbar-title" v-if="$vuetify.breakpoint.smAndUp">
+        <div class="toolbar-title hidden-xs-only">
           Datenbank {{ dbID ? 'bearbeiten' : 'anlegen'}}
         </div>
 
@@ -20,7 +20,7 @@
       </v-toolbar>
       <v-content>
         <v-container>
-          <h1 v-if="$vuetify.breakpoint.xsOnly">
+          <h1 class="mb-2 hidden-sm-and-up">
             Datenbank {{ dbID ? 'bearbeiten' : 'anlegen'}}
           </h1>
           <v-form ref="form">
@@ -29,10 +29,10 @@
               <b>{{ error }}</b>
             </p>
 
-            <h2 v-if="dbID">Datenbank-Name: {{ id }}</h2>
-            <v-text-field v-model="id" label="Datenbank Name" required :rules="required" v-else/>
+            <h2 v-if="dbID">Datenbank-Name: {{ db.id }}</h2>
+            <v-text-field v-model="db.id" label="Datenbank Name" required :rules="required" v-else/>
 
-            <v-text-field textarea label="SQL-Statement" v-model="sql" required :rules="required" :rows="rows"/>
+            <v-text-field textarea label="SQL-Statement" v-model="db.sql" required :rules="required" :rows="rows"/>
 
             <p class="error-text mt-2" v-if="error">
               Es ist ein Fehler aufgetreten: <br>
@@ -51,7 +51,7 @@ export default {
   props: {
     dbID: {
       type: [Number, String],
-      default: null
+      default: undefined
     },
     isNew: {
       type: Boolean,
@@ -62,10 +62,12 @@ export default {
   data() {
     return {
       dialog: false,
-      error: null,
+      error: undefined,
       isSaving: false,
-      id: '',
-      sql: '',
+      db: {
+        id: '',
+        sql: ''
+      },
       required: [
         v => !!v || 'Dies ist ein Pflichtfeld'
       ]
@@ -90,41 +92,54 @@ export default {
   },
 
   async mounted() {
-    if (this.dbID) {
-      const response = await fetch(`/api/databases/${this.dbID}`)
-
-      if (!response.ok) {
-        alert(response.statusText)
-        return
-      }
-
-      const db = await response.json()
-      this.id = db.id
-      this.sql = db.sql
-    }
+    await this.loadDB()
   },
 
   methods: {
+    async loadDB() {
+      if (this.dbID) {
+        const response = await fetch(`/api/databases/${this.dbID}`)
+
+        if (!response.ok) {
+          alert(response.statusText)
+          return
+        }
+
+        this.db = await response.json()
+      }
+    },
+
     async save() {
-      if (this.$refs.form.validate()) {
+      const valid = await this.$refs.form.validate()
+      if (valid) {
         this.isSaving = true
-        const response = await fetch(`/api/databases/${this.id}`, {
+        const response = await fetch(`/api/databases/${this.db.id}`, {
           method: 'PUT',
           headers: {'x-config-token': global.configToken},
-          body: JSON.stringify({sql: this.sql})
+          body: JSON.stringify({sql: this.db.sql})
         })
         const result = await response.json()
-        this.error = result.error ? result.error : response.ok ? null : response.statusText
+        this.error = result.error ? result.error : response.ok ? undefined : response.statusText
         this.isSaving = false
         if (!this.error) this.close()
       }
     },
 
+    async cancel() {
+      // closes the dialog and reload the db
+      this.$refs.form.reset()
+      this.close()
+      this.db = {
+        id: '',
+        sql: ''
+      }
+      await this.loadDB()
+    },
+
     close() {
       this.$emit('refresh')
-      this.error = null
+      this.error = undefined
       this.dialog = false
-      if (!this.dbID) this.$refs.form.reset() // empty fields because the db wasn't saved
     }
   }
 }
