@@ -58,7 +58,7 @@
                     small
                     color="primary"
                     slot="activator"
-                    @click="moveUp(q, i)"
+                    @click="moveDown(i - 1)"
                   >
                     <v-icon>arrow_upward</v-icon>
                     </v-btn>
@@ -72,7 +72,7 @@
                       small
                       color="primary"
                       slot="activator"
-                      @click="moveDown(q, i)"
+                      @click="moveDown(i)"
                     >
                       <v-icon>arrow_downward</v-icon>
                     </v-btn>
@@ -194,26 +194,9 @@ export default {
       }
     },
 
-    moveUp(question, index) {
+    moveDown(index) {
       const questions = this.quiz.questions
-      this.quiz.questions = undefined
-      const upperQuestion = questions[index - 1]
-      questions[index - 1] = question
-      questions[index] = upperQuestion
-      this.$nextTick(() => {
-        this.quiz.questions = questions
-      })
-    },
-
-    moveDown(question, index) {
-      const questions = this.quiz.questions
-      this.quiz.questions = undefined
-      const downerQuestion = questions[index + 1]
-      questions[index + 1] = question
-      questions[index] = downerQuestion
-      this.$nextTick(() => {
-        this.quiz.questions = questions
-      })
+      questions.splice(index, 2, questions[index + 1], questions[index])
     },
 
     addQuestion() {
