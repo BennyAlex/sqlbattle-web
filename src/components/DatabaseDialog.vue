@@ -23,7 +23,7 @@
           <h1 class="mb-2 hidden-sm-and-up">
             Datenbank {{ dbID ? 'bearbeiten' : 'anlegen'}}
           </h1>
-          <v-form ref="form">
+          <v-form ref="form" @submit.prevent="save">
             <p class="error-text mt-2" v-if="error">
               Es ist ein Fehler aufgetreten: <br>
               <b>{{ error }}</b>
